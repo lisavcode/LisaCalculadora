@@ -167,4 +167,30 @@
     });
     document.body.innerText = `${Config.Messages.DRMFailure}\n(Domain: ${domain})`;
   }
+
+  // --- 6. Sistema de Autenticação por ID ---
+  window.AuthSystem = {
+    getMachineId: function () {
+      let id = localStorage.getItem("icarus_device_id");
+      if (!id) {
+        // Gera um ID simples e aleatório se não existir
+        id =
+          "USR-" +
+          Math.random().toString(36).substr(2, 9).toUpperCase() +
+          "-" +
+          Date.now().toString(36).toUpperCase();
+        localStorage.setItem("icarus_device_id", id);
+      }
+      return id;
+    },
+
+    checkAccess: function () {
+      if (!Config.Auth || !Config.Auth.Enabled) return true; // Se desativado, permite
+
+      const myId = this.getMachineId();
+      const allowed = Config.Auth.AuthorizedIDs.includes(myId);
+
+      return allowed;
+    },
+  };
 })();

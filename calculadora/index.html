@@ -375,9 +375,23 @@
     <script src="../professions/alquimista.js"></script>
     <script src="../professions/minerador.js"></script>
     <script src="../professions/artesao.js"></script>
+    <script src="../professions/artesao.js"></script>
     <script src="../professions/alfaiate.js"></script>
 
     <script>
+      // --- PROTEÇÃO DE ROTA ---
+      // Se o AuthSystem existir e o acesso for negado, chuta para a home
+      if (window.AuthSystem) {
+        if (!window.AuthSystem.checkAccess()) {
+          alert("Acesso Negado! Autentique-se primeiro.");
+          window.location.href = "../index.html";
+        }
+      } else {
+        // Se por algum motivo o AuthSystem não carregar (ex: bloqueio de script), tenta bloquear também
+        // mas idealmente o security.js já cuidou disso
+        console.warn("AuthSystem não detectado.");
+      }
+
       let currentTab = "cacador";
 
       const searchInput = document.getElementById("search");
