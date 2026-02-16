@@ -182,16 +182,17 @@
     getFingerprint: function () {
       try {
         const stableData = [
-          navigator.platform,
-          navigator.hardwareConcurrency,
-          navigator.deviceMemory,
-          navigator.language,
-          Intl.DateTimeFormat().resolvedOptions().timeZone,
+          navigator.platform || "unknown",
+          navigator.hardwareConcurrency || "unknown",
+          Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown",
+          navigator.language || "unknown",
+          screen.colorDepth || "unknown",
         ].join("|");
 
         return this.hashString(stableData);
-      } catch {
-        return "UNKNOWN";
+      } catch (e) {
+        console.error("Fingerprint error:", e);
+        return "FALLBACK-" + Math.random().toString(36).substring(2);
       }
     },
     getMachineId: function () {
