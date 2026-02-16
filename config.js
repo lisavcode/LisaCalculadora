@@ -1,10 +1,17 @@
 const Config = {
   Debug: false, // Ative para ver logs no console
+  Store: {
+    Url: "https://discord.com/invite/QBE6kKCBTF",
+    ButtonText: "Acessar Loja",
+    Title: "Lisa Store Mods e Implementações para jogos",
+    Description: "Facilite sua vida e otimize seu tempo!",
+  },
   Security: {
     DisableRightClick: true,
     DisableTextSelection: true,
     DisableShortcuts: true, // Ctrl+C, Ctrl+U, F12, etc.
     BlackScreenOnPrint: true,
+    BlackScreenDuration: 500, // Duração da tela preta em ms
   },
   Messages: {
     PrintWarning: "Captura de tela não permitida!",

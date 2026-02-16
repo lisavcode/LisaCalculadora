@@ -97,7 +97,7 @@
         if (navigator.clipboard) navigator.clipboard.writeText("");
         setTimeout(() => {
           overlay.style.display = "none";
-        }, 1000);
+        }, Config.Security.BlackScreenDuration || 1000);
       }
 
       document.addEventListener("keyup", (e) => {

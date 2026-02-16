@@ -37,14 +37,125 @@
         color: #00eeff;
         font-weight: bold;
       }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
   </head>
   <body>
     <h1>Calculadora Desenvolvida por Lisa</h1>
     <p>Entre em contato para liberação.</p>
 
-    <!-- Scripts de segurança (opcional, para proteger essa tela também) -->
+    <!-- Seção da Loja -->
+    <div
+      id="store-container"
+      style="
+        display: none;
+        margin-top: 40px;
+        text-align: center;
+        animation: fadeIn 2s ease-in-out;
+      "
+    >
+      <div
+        class="store-icon"
+        style="
+          margin-bottom: 15px;
+          filter: drop-shadow(0 0 5px rgba(0, 238, 255, 0.5));
+        "
+      >
+        <svg
+          width="60"
+          height="60"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#00eeff"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+      </div>
+      <h2
+        id="store-title"
+        style="
+          color: #00eeff;
+          margin: 5px 0;
+          font-size: 1.5rem;
+          text-shadow: 0 0 5px rgba(0, 238, 255, 0.3);
+        "
+      ></h2>
+      <p
+        id="store-desc"
+        style="color: #cccccc; margin-bottom: 25px; font-size: 1rem"
+      ></p>
+      <a
+        id="store-link"
+        href="#"
+        target="_blank"
+        style="
+          display: inline-block;
+          padding: 12px 30px;
+          background-color: rgba(0, 238, 255, 0.1);
+          color: #00eeff;
+          border: 1px solid #00eeff;
+          border-radius: 4px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          font-size: 0.9rem;
+          cursor: pointer;
+          box-shadow: 0 0 10px rgba(0, 238, 255, 0.2);
+        "
+        onmouseover="
+          this.style.backgroundColor = '#00eeff';
+          this.style.color = '#1a1a1a';
+          this.style.boxShadow = '0 0 20px rgba(0, 238, 255, 0.6)';
+        "
+        onmouseout="
+          this.style.backgroundColor = 'rgba(0, 238, 255, 0.1)';
+          this.style.color = '#00eeff';
+          this.style.boxShadow = '0 0 10px rgba(0, 238, 255, 0.2)';
+        "
+      >
+        Acessar Loja
+      </a>
+    </div>
+
+    <!-- Scripts de configuração e Init da Loja -->
     <script src="config.js"></script>
+    <script>
+      // Inicializar Loja
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof Config !== "undefined" && Config.Store) {
+          const storeContainer = document.getElementById("store-container");
+          const storeTitle = document.getElementById("store-title");
+          const storeDesc = document.getElementById("store-desc");
+          const storeLink = document.getElementById("store-link");
+
+          if (Config.Store.Title) storeTitle.innerText = Config.Store.Title;
+          if (Config.Store.Description)
+            storeDesc.innerText = Config.Store.Description;
+          if (Config.Store.ButtonText)
+            storeLink.innerText = Config.Store.ButtonText;
+          if (Config.Store.Url) storeLink.href = Config.Store.Url;
+
+          storeContainer.style.display = "block";
+        }
+      });
+    </script>
     <script src="security.js"></script>
   </body>
 </html>
