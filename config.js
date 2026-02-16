@@ -17,10 +17,4 @@ const Config = {
     OwnerName: "Lisa", // Nome do proprietário para exibição no console
     EnableDebuggerLoop: true, // Trava o inspetor de elementos com loops de debugger
   },
-  Auth: {
-    Enabled: true,
-    AuthorizedIDs: [
-      "USR-LT2TEYN37-MLOG43KO", // Adicione os IDs dos clientes aqui
-    ],
-  },
 };

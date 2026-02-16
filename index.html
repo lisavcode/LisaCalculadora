@@ -20,12 +20,12 @@
       }
 
       h1 {
-        color: #00ff15;
+        color: #00eeff;
         text-transform: uppercase;
         letter-spacing: 2px;
         margin-bottom: 20px;
         font-size: 2rem;
-        text-shadow: 0 0 10px rgba(4, 105, 0, 0.5);
+        text-shadow: 0 0 10px rgba(0, 238, 255, 0.5);
       }
 
       p {
@@ -39,66 +39,12 @@
       }
     </style>
   </head>
-</head>
   <body>
-    <div class="container" style="max-width: 500px; padding: 20px; background: #2d2d2d; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
-        <h1>Calculadora Icarus</h1>
-        <p>Sistema protegido. Identifique-se.</p>
-        
-        <div style="background: #1a1a1a; padding: 15px; border-radius: 5px; margin: 20px 0; border: 1px solid #444;">
-            <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: #888;">SEU ID DE ACESSO:</p>
-            <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center;">
-                <code id="user-id" style="color: #00eeff; font-size: 1.1rem; font-weight: bold;">Carregando...</code>
-                <button onclick="copyID()" style="background: #444; border: none; color: white; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-size: 0.8rem;">Copiar</button>
-            </div>
-        </div>
+    <h1>Calculadora Desenvolvida por Lisa</h1>
+    <p>Entre em contato para liberação.</p>
 
-        <button id="btn-enter" onclick="tryLogin()" style="width: 100%; padding: 12px; background: #00eeff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 1rem; color: #000; text-transform: uppercase;">
-            Entrar
-        </button>
-        
-        <p id="status-msg" style="margin-top: 15px; font-size: 0.9rem; color: #ff4444; display: none;"></p>
-    </div>
-
-    <!-- Scripts de segurança e configuração -->
+    <!-- Scripts de segurança (opcional, para proteger essa tela também) -->
     <script src="config.js"></script>
     <script src="security.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-             // Exibe o ID assim que carregar
-             const idDisplay = document.getElementById('user-id');
-             if (window.AuthSystem) {
-                 const myID = window.AuthSystem.getMachineId();
-                 idDisplay.textContent = myID;
-             }
-        });
-
-        function copyID() {
-            const id = document.getElementById('user-id').textContent;
-            navigator.clipboard.writeText(id).then(() => {
-                alert("ID copiado para a área de transferência!");
-            });
-        }
-
-        function tryLogin() {
-            const msg = document.getElementById('status-msg');
-            msg.style.display = 'none';
-
-            if (window.AuthSystem && window.AuthSystem.checkAccess()) {
-                msg.style.color = '#00ff00'; // Verde
-                msg.innerText = "Acesso Autorizado! Redirecionando...";
-                msg.style.display = 'block';
-                
-                setTimeout(() => {
-                    window.location.href = 'calculadora/index.html';
-                }, 1000);
-            } else {
-                msg.style.color = '#ff4444'; // Vermelho
-                msg.innerText = "Acesso Negado: Seu ID não está autorizado.";
-                msg.style.display = 'block';
-            }
-        }
-    </script>
   </body>
 </html>
