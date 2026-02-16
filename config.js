@@ -13,13 +13,8 @@ const Config = {
   },
   DRM: {
     Enabled: true,
-    AllowedDomains: [
-      "localhost",
-      "127.0.0.1",
-      "https://lisavcode.github.io/",
-      "https://lisavcode.github.io/CalculadoraIcarus/",
-    ], // Adicione seus domínios aqui
-    OwnerName: "Icarus Dev", // Nome do proprietário para exibição no console
+    AllowedDomains: ["localhost", "127.0.0.1", "lisavcode.github.io"], // Domínios permitidos. Para uso local (file://), o domínio é vazio.
+    OwnerName: "Lisa Dev", // Nome do proprietário para exibição no console
     EnableDebuggerLoop: true, // Trava o inspetor de elementos com loops de debugger
   },
 };
