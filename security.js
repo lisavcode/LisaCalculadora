@@ -181,46 +181,19 @@
 
     getFingerprint: function () {
       try {
-        // 1. Canvas Fingerprint (Renderização única por navegador/GPU)
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = 200;
-        canvas.height = 50;
-
-        ctx.textBaseline = "top";
-        ctx.font = "14px 'Arial'";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "#f60";
-        ctx.fillRect(125, 1, 62, 20);
-        ctx.fillStyle = "#069";
-        ctx.fillText("Icarus Auth v1", 2, 15);
-        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-        ctx.fillText("Icarus Auth v1", 4, 17);
-
-        const canvasData = canvas.toDataURL();
-
-        // 2. Propriedades de Tela e Navegador
-        const screenData = [
-          window.screen.width,
-          window.screen.height,
-          window.screen.colorDepth,
-          navigator.language,
+        const stableData = [
+          navigator.platform,
           navigator.hardwareConcurrency,
-          navigator.deviceMemory || "unknown",
-          new Date().getTimezoneOffset(),
+          navigator.deviceMemory,
+          navigator.language,
+          Intl.DateTimeFormat().resolvedOptions().timeZone,
         ].join("|");
 
-        // Combina tudo
-        const rawFingerprint = canvasData + "||" + screenData;
-
-        return this.hashString(rawFingerprint);
-      } catch (e) {
-        console.error("Erro ao gerar fingerprint:", e);
-        // Fallback para aleatório se der erro (não deve acontecer)
-        return Math.random().toString(36).substr(2, 9).toUpperCase();
+        return this.hashString(stableData);
+      } catch {
+        return "UNKNOWN";
       }
     },
-
     getMachineId: function () {
       // Tenta recuperar do localStorage para performance
       let id = localStorage.getItem("icarus_device_id");
