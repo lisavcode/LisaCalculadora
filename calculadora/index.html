@@ -114,6 +114,10 @@
         text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
       }
 
+      .era-0 {
+        background-color: #9e9e9e;
+        color: white;
+      } /* Gray - No Era */
       .era-1 {
         background-color: #4caf50;
         color: white;
@@ -183,6 +187,33 @@
         flex-direction: column;
         gap: 10px;
         padding-bottom: 50px;
+      }
+
+      /* Filter Group */
+      .filter-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        background-color: var(--card-bg);
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+      }
+
+      select {
+        background-color: #404040;
+        border: 1px solid var(--border);
+        color: white;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 14px;
+        outline: none;
+        flex-grow: 1;
+        cursor: pointer;
+      }
+
+      select:focus {
+        border-color: var(--primary);
       }
 
       .category-header {
@@ -417,6 +448,28 @@
         />
       </div>
 
+      <div class="filter-group">
+        <select id="filter-era">
+          <option value="all">Todas as Eras</option>
+          <option value="1">Era 1</option>
+          <option value="2">Era 2</option>
+          <option value="3">Era 3</option>
+          <option value="4">Era 4</option>
+          <option value="5">Era 5</option>
+          <option value="6">Era 6</option>
+          <option value="0">Sem Era</option>
+        </select>
+        <select id="sort-order">
+          <option value="default">Sem Filtro</option>
+          <option value="era-asc">Era: Menor para Maior</option>
+          <option value="era-desc">Era: Maior para Menor</option>
+          <option value="price-asc">Preço: Menor para Maior</option>
+          <option value="price-desc">Preço: Maior para Menor</option>
+          <option value="name-asc">Nome: A-Z</option>
+          <option value="name-desc">Nome: Z-A</option>
+        </select>
+      </div>
+
       <div id="results" class="results-list"></div>
     </div>
 
@@ -438,6 +491,8 @@
 
       const searchInput = document.getElementById("search");
       const quantityInput = document.getElementById("quantity");
+      const filterEraSelect = document.getElementById("filter-era");
+      const sortOrderSelect = document.getElementById("sort-order");
       const resultsContainer = document.getElementById("results");
 
       let customPrices = {};
@@ -510,10 +565,9 @@
 
         const safeName = item.name.replace(/'/g, "\\'");
 
-        let eraBadge = "";
-        if (item.era) {
-          eraBadge = `<span class="era-badge era-${item.era}">Era ${item.era}</span>`;
-        }
+        const era = item.era !== undefined ? item.era : 0;
+        let eraText = era === 0 ? "Sem Era" : `Era ${era}`;
+        let eraBadge = `<span class="era-badge era-${era}">${eraText}</span>`;
 
         return `
                 <div class="item-card">
@@ -566,8 +620,20 @@
         const numberInput = document.getElementById(`custom-input-${index}`);
         const totalDisplay = document.getElementById(`custom-total-${index}`);
 
+        const min = parseFloat(rangeInput.min);
+        const max = parseFloat(rangeInput.max);
+
         let val = parseFloat(value);
-        if (isNaN(val)) val = 0;
+        if (isNaN(val)) val = min;
+
+        // Se o valor for maior que o máximo, trava no máximo
+        if (val > max) {
+          val = max;
+        }
+        // Se o valor for menor que o mínimo, trava no mínimo (opcional, mas boa prática)
+        if (val < min) {
+          val = min;
+        }
 
         if (typeof customPrices !== "undefined") {
           customPrices[itemName] = val;
@@ -578,10 +644,8 @@
           numberInput.value = val;
         } else {
           rangeInput.value = val;
+          numberInput.value = val; // Atualiza o input numérico também para refletir o limite
         }
-
-        const min = parseFloat(rangeInput.min);
-        const max = parseFloat(rangeInput.max);
 
         let percent = 0;
         if (max > min) {
@@ -629,35 +693,105 @@
         let qty = parseFloat(quantityInput.value);
         if (!qty || qty < 0) qty = 0;
 
-        const currentDatabase = dataByProfession[currentTab] || [];
+        const eraFilter = filterEraSelect.value;
+        const sortOrder = sortOrderSelect.value;
 
-        if (query.length === 0) {
-          renderGroupedList(currentDatabase, qty);
-          return;
+        const currentDatabase = dataByProfession[currentTab] || [];
+        let filteredItems = [...currentDatabase];
+
+        // 1. Filtrar por Busca
+        if (query.length > 0) {
+          filteredItems = filteredItems.filter((item) =>
+            item.name.toLowerCase().includes(query),
+          );
         }
 
-        const filteredItems = currentDatabase.filter((item) =>
-          item.name.toLowerCase().includes(query),
-        );
+        // 2. Filtrar por Era
+        if (eraFilter !== "all") {
+          const eraNum = parseInt(eraFilter);
+          filteredItems = filteredItems.filter((item) => {
+            const itemEra = item.era !== undefined ? item.era : 0;
+            return itemEra === eraNum;
+          });
+        }
+
+        // 3. Ordenar
+        if (sortOrder !== "default") {
+          filteredItems.sort((a, b) => {
+            // Obter preços (customizado ou mínimo)
+            const priceA =
+              customPrices[a.name] !== undefined ? customPrices[a.name] : a.min;
+            const priceB =
+              customPrices[b.name] !== undefined ? customPrices[b.name] : b.min;
+
+            switch (sortOrder) {
+              case "price-asc":
+                return priceA - priceB;
+              case "price-desc":
+                return priceB - priceA;
+              case "name-asc":
+                return a.name.localeCompare(b.name);
+              case "name-desc":
+                return b.name.localeCompare(a.name);
+              case "era-asc": {
+                const eraA = a.era !== undefined ? a.era : 0;
+                const eraB = b.era !== undefined ? b.era : 0;
+                // Era 0 é tratado como maior que qualquer outra era para ficar no final
+                const valA = eraA === 0 ? 999 : eraA;
+                const valB = eraB === 0 ? 999 : eraB;
+                return valA - valB;
+              }
+              case "era-desc": {
+                const eraA = a.era !== undefined ? a.era : 0;
+                const eraB = b.era !== undefined ? b.era : 0;
+                // Era 0 é tratado como maior que qualquer outra era (999)
+                // Maior para Menor: 999 (0) -> 6 -> 5 ... -> 1
+                const valA = eraA === 0 ? 999 : eraA;
+                const valB = eraB === 0 ? 999 : eraB;
+                return valB - valA;
+              }
+              default:
+                return 0;
+            }
+          });
+        }
 
         resultsContainer.innerHTML = "";
 
         if (filteredItems.length === 0) {
           resultsContainer.innerHTML =
-            '<div class="no-results">Nenhum item encontrado nesta categoria.</div>';
+            '<div class="no-results">Nenhum item encontrado.</div>';
           return;
         }
 
-        filteredItems.forEach((item, index) => {
-          const cardWrapper = document.createElement("div");
+        if (sortOrder === "default") {
+          renderGroupedList(filteredItems, qty);
+        } else {
+          renderLinearList(filteredItems, qty);
+        }
+      }
 
-          cardWrapper.innerHTML = createItemCard(item, qty, index);
+      function renderLinearList(items, qty) {
+        resultsContainer.innerHTML = "";
+        items.forEach((item, index) => {
+          const cardWrapper = document.createElement("div");
+          // Precisamos de um índice único para os IDs dos inputs?
+          // Podemos usar o índice do array filtrado, mas cuidado com conflitos se usarmos índices globais.
+          // O createItemCard usa o index para gerar IDs: custom-input-${index}
+          // Se filtrarmos, os índices mudam. Isso pode ser confuso se o usuário digitar algo, filtrar e o foco se perder
+          // ou o valor for atribuído errado.
+          // O ideal seria usar o nome do item como chave ou gerar um ID único estável.
+          // Mas como o updateCustomPrice atualiza o `customPrices` pelo NOME, o índice serve apenas para DOM.
+          // Então está tudo bem, desde que não tenhamos colisão de IDs na mesma tela.
+          cardWrapper.innerHTML = createItemCard(item, qty, index); // index here is current list index
           resultsContainer.appendChild(cardWrapper.firstElementChild);
         });
       }
 
       searchInput.addEventListener("input", calculate);
       quantityInput.addEventListener("input", calculate);
+      filterEraSelect.addEventListener("change", calculate);
+      sortOrderSelect.addEventListener("change", calculate);
 
       const savedTab = localStorage.getItem("lastTab");
       setTab(savedTab || "cacador");
