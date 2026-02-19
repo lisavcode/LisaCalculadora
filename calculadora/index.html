@@ -492,8 +492,10 @@
 
         // 1. Filter by Search
         if (query.length > 0) {
-          filteredItems = filteredItems.filter((item) =>
-            item.name.toLowerCase().includes(query),
+          filteredItems = filteredItems.filter(
+            (item) =>
+              item.name.toLowerCase().includes(query) ||
+              (item.cat && item.cat.toLowerCase().includes(query)),
           );
         }
 
