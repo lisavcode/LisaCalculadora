@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Icarus - Encomendas</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Professions Data (Importing from parent directory) -->
+    <script>
+      window.dataByProfession = {};
+    </script>
+    <script src="../professions/alquimista.js"></script>
+    <script src="../professions/alfaiate.js"></script>
+    <script src="../professions/minerador.js"></script>
+    <script src="../professions/artesao.js"></script>
+    <script src="../professions/cacador.js"></script>
+    <!-- Add other professions as needed -->
+
+    <script>
+      // Tailwind Config matching main app
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Outfit", "sans-serif"] },
+            safelist: ["text-coin-oz", "text-coin-sz", "text-coin-bz"],
+            colors: {
+              primary: "var(--color-primary)",
+              secondary: "var(--color-secondary)",
+              bg: "var(--color-bg)",
+              surface: "var(--color-surface)",
+              "coin-oz": "var(--color-coin-oz)",
+              "coin-sz": "var(--color-coin-sz)",
+              "coin-bz": "var(--color-coin-bz)",
+            },
+            boxShadow: {
+              neon: "0 0 5px rgb(var(--color-primary-rgb) / 0.3)",
+              "neon-hover": "0 0 10px rgb(var(--color-primary-rgb) / 0.6)",
+            },
+            animation: {
+              "fade-in-down": "fadeInDown 0.3s ease-out",
+            },
+            keyframes: {
+              fadeInDown: {
+                "0%": { opacity: "0", transform: "translateY(-10px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <style type="text/tailwindcss">
+    body {
+      background-color: var(--color-bg);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.3) 0, transparent 50%),
+        radial-gradient(at 50% 0%, var(--color-surface) 0, transparent 50%),
+        radial-gradient(at 100% 0%, var(--color-secondary) 0, transparent 50%);
+      background-attachment: fixed;
+    }
+  </style>
+  <body class="bg-bg text-text min-h-screen p-6 font-sans">
+    <div class="max-w-7xl mx-auto relative">
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-10">
+        <div>
+          <h1
+            class="text-4xl font-bold text-primary uppercase tracking-wider drop-shadow-lg"
+          >
+            Encomendas
+          </h1>
+          <p class="text-muted text-lg font-light">Gerenciamento de Pedidos</p>
+        </div>
+        <div class="flex gap-4">
+          <button
+            onclick="NotesManager.downloadJSON()"
+            class="px-4 py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-sm flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            Exportar
+          </button>
+          <label
+            class="px-4 py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-sm cursor-pointer flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+              />
+            </svg>
+            Restaurar
+            <input
+              type="file"
+              onchange="NotesManager.uploadJSON(this)"
+              class="hidden"
+              accept=".json"
+            />
+          </label>
+        </div>
+      </header>
+
+      <!-- Search / Filter -->
+      <div class="mb-8 flex gap-4">
+        <input
+          type="text"
+          id="search-orders"
+          placeholder="Buscar comprador..."
+          class="w-full max-w-md bg-surface border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-primary shadow-inner transition-all duration-200"
+        />
+      </div>
+
+      <!-- Orders Grid -->
+      <div
+        id="orders-container"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        <!-- Order Cards will be injected here -->
+      </div>
+
+      <!-- FAB (Floating Action Button) -->
+      <button
+        onclick="NotesManager.openModal()"
+        class="fixed bottom-8 right-8 w-14 h-14 bg-primary rounded-full flex items-center justify-center text-black hover:rotate-90 hover:scale-110 transition-all duration-300 z-40 outline-none focus:ring-4 focus:ring-primary/50"
+        title="Nova Encomenda"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-8 w-8"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      </button>
+
+      <!-- Order Modal -->
+      <div
+        id="order-modal"
+        class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300"
+      >
+        <div
+          class="glass-card w-full max-w-2xl p-6 rounded-2xl relative transform scale-95 transition-transform duration-300"
+        >
+          <button
+            onclick="NotesManager.closeModal()"
+            class="absolute top-4 right-4 text-muted hover:text-white transition-colors hover:rotate-90 duration-200 outline-none rounded-full focus:ring-2 focus:ring-primary p-1"
+            title="Fechar"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <h2 class="text-2xl font-bold text-primary mb-6">Nova Encomenda</h2>
+
+          <form id="order-form" onsubmit="NotesManager.saveOrder(event)">
+            <div class="grid grid-cols-1 gap-4 mb-6">
+              <div>
+                <label class="block text-sm text-muted mb-1"
+                  >Nome do Comprador</label
+                >
+                <input
+                  type="text"
+                  name="buyer"
+                  required
+                  class="w-full bg-black/20 border border-white/20 rounded-lg px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary transition-all duration-200 shadow-inner"
+                />
+              </div>
+
+              <!-- Products List -->
+              <div>
+                <label class="block text-sm font-bold text-gray-400 mb-2"
+                  >Produtos</label
+                >
+                <div
+                  id="product-list"
+                  class="grid grid-cols-2 gap-2 mb-3 max-h-60 overflow-y-auto p-2 custom-scrollbar content-start"
+                ></div>
+
+                <button
+                  type="button"
+                  id="open-picker-btn"
+                  onclick="ItemPicker.open()"
+                  class="w-full py-3 rounded-xl border border-dashed border-primary/50 text-primary font-bold hover:bg-primary/10 hover:border-solid transition-all duration-300 flex justify-center items-center gap-2 group uppercase tracking-widest text-sm relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#0a131a]"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 transform group-hover:rotate-180 transition-transform duration-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  Adicionar Produto
+                </button>
+              </div>
+
+              <div class="flex justify-end text-xl font-bold text-primary">
+                Total: <span id="total-price" class="ml-2">0bz</span>
+              </div>
+
+              <div>
+                <label class="block text-sm text-muted mb-1"
+                  >Descrição / Observações</label
+                >
+                <textarea
+                  name="description"
+                  rows="3"
+                  class="w-full bg-black/20 border border-white/20 rounded-lg px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary transition-all duration-200 shadow-inner resize-y"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-3">
+              <button
+                type="button"
+                onclick="NotesManager.closeModal()"
+                class="px-6 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-8 py-2 bg-primary text-black font-bold rounded-lg transition-all"
+                style="color: var(--color-text-on-primary, black)"
+              >
+                Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM PICKER MODAL (Pro Max) -->
+    <div
+      id="item-picker-modal"
+      class="fixed inset-0 z-[60] hidden justify-center items-center bg-black/80 transition-opacity duration-300 opacity-0"
+    >
+      <div
+        class="glass-card w-full max-w-5xl h-[90vh] md:h-[85vh] m-4 rounded-2xl flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 border border-primary/20"
+      >
+        <!-- Picker Header -->
+        <div
+          class="p-6 border-b border-white/10 flex flex-col gap-4 bg-black/20"
+        >
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-primary flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              Selecionar Produto
+            </h2>
+            <button
+              type="button"
+              id="close-picker-btn"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex flex-col md:flex-row gap-4">
+            <!-- Search -->
+            <div class="relative flex-grow">
+              <input
+                type="text"
+                id="picker-search"
+                placeholder="Buscar item..."
+                autocomplete="off"
+                class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 pl-10 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-white placeholder-gray-500"
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 absolute left-3 top-3.5 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex gap-2 min-w-[300px]">
+              <select
+                id="picker-era-filter"
+                class="flex-grow bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary cursor-pointer appearance-none"
+              >
+                <option value="all">Todas as Eras</option>
+                <option value="1">Era 1</option>
+                <option value="2">Era 2</option>
+                <option value="3">Era 3</option>
+                <option value="4">Era 4</option>
+                <option value="5">Era 5</option>
+                <option value="6">Era 6</option>
+                <option value="0">Sem Era</option>
+              </select>
+              <select
+                id="picker-sort"
+                class="flex-grow bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary cursor-pointer appearance-none"
+              >
+                <option value="name-asc">Nome: A-Z</option>
+                <option value="price-asc">Preço: Menor</option>
+                <option value="price-desc">Preço: Maior</option>
+                <option value="era-asc">Era: Menor</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Profession Tabs -->
+          <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+            <button
+              data-tab="cacador"
+              class="picker-tab-btn px-4 py-1.5 rounded-full border border-primary bg-primary text-black font-bold text-sm transition-all hover:scale-105"
+            >
+              Caçador
+            </button>
+            <button
+              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              data-tab="alquimista"
+            >
+              Alquimista
+            </button>
+            <button
+              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              data-tab="minerador"
+            >
+              Minerador
+            </button>
+            <button
+              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              data-tab="artesao"
+            >
+              Artesão
+            </button>
+            <button
+              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              data-tab="alfaiate"
+            >
+              Alfaiate
+            </button>
+          </div>
+        </div>
+
+        <!-- Picker Grid -->
+        <div class="flex-grow overflow-y-auto p-6 bg-black/10 custom-scrollbar">
+          <div
+            id="item-picker-results"
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          >
+            <!-- Cards injected by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shared Config & Data -->
+    <script src="../config.js"></script>
+    <!-- Moved settings load to end of body to align with fix -->
+    <script src="../settings.js"></script>
+
+    <!-- Logic -->
+    <script src="script.js"></script>
+    <script>
+      // Ensure settings loaded safely
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof Settings !== "undefined" && Settings.init) {
+          // Settings.init() is already called in script.js, checking redundancy
+        }
+      });
+    </script>
+  </body>
+</html>

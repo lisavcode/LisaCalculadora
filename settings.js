@@ -106,6 +106,13 @@ const Settings = {
     this.apply();
     this.injectStyles();
     this.createSettingsUI();
+
+    // Escuta atualizações vindas do Hub (Pai) ou de outros scripts
+    window.addEventListener("app_settings_updated", () => {
+      this.load();
+      this.apply();
+      this.updateColorInputs();
+    });
   },
 
   load() {
@@ -158,8 +165,25 @@ const Settings = {
   },
 
   save() {
+    const configString = JSON.stringify(this.themes);
     localStorage.setItem("app_theme", this.currentTheme);
-    localStorage.setItem("app_themes_config", JSON.stringify(this.themes));
+    localStorage.setItem("app_themes_config", configString);
+
+    // Dispara evento para sincronização interna (mesma página)
+    window.dispatchEvent(
+      new CustomEvent("app_settings_updated", {
+        detail: { theme: this.currentTheme, themes: this.themes },
+      }),
+    );
+
+    // Dispara evento para o pai (Hub SPA) se estiver em iframe
+    if (window.parent && window.parent !== window) {
+      window.parent.dispatchEvent(
+        new CustomEvent("app_settings_updated", {
+          detail: { theme: this.currentTheme, themes: this.themes },
+        }),
+      );
+    }
   },
 
   setTheme(themeName) {
@@ -890,5 +914,9 @@ const Settings = {
   },
 };
 
-// Initialize immediately to prevent FOUC
-Settings.init();
+// Initialize when DOM is ready to prevent null reference errors
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => Settings.init());
+} else {
+  Settings.init();
+}

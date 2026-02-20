@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora - Multi Profissão</title>
+    <title>Calculadora Icarus</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
@@ -107,7 +108,7 @@
         <!-- Tabs -->
         <div class="flex flex-wrap justify-center gap-3 mt-6">
           <button
-            class="tab-btn active px-6 py-2 rounded-full border border-primary bg-primary font-bold transition-all shadow-neon"
+            class="tab-btn active px-6 py-2 rounded-full border border-primary bg-primary font-bold transition-all"
             style="color: var(--color-text-on-primary)"
             data-tab="cacador"
             onclick="setTab('cacador')"
@@ -115,7 +116,7 @@
             Caçador
           </button>
           <button
-            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary hover:shadow-neon-hover"
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
             style="color: var(--color-tab-text)"
             data-tab="alquimista"
             onclick="setTab('alquimista')"
@@ -123,7 +124,7 @@
             Alquimista
           </button>
           <button
-            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary hover:shadow-neon-hover"
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
             style="color: var(--color-tab-text)"
             data-tab="minerador"
             onclick="setTab('minerador')"
@@ -131,7 +132,7 @@
             Minerador
           </button>
           <button
-            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary hover:shadow-neon-hover"
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
             style="color: var(--color-tab-text)"
             data-tab="artesao"
             onclick="setTab('artesao')"
@@ -139,7 +140,7 @@
             Artesão
           </button>
           <button
-            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary hover:shadow-neon-hover"
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
             style="color: var(--color-tab-text)"
             data-tab="alfaiate"
             onclick="setTab('alfaiate')"
@@ -243,7 +244,7 @@
       <!-- Results Grid -->
       <div
         id="results"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-20"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:col-span-5 gap-3 pb-20"
       ></div>
     </div>
 
@@ -283,11 +284,11 @@
         // Update UI tabs
         document.querySelectorAll(".tab-btn").forEach((btn) => {
           if (btn.dataset.tab === tabName) {
-            btn.classList.add("bg-primary", "border-primary", "shadow-neon");
+            btn.classList.add("bg-primary", "border-primary");
             btn.style.color = "var(--color-text-on-primary)";
             btn.classList.remove("text-slate-400", "border-slate-600");
           } else {
-            btn.classList.remove("bg-primary", "border-primary", "shadow-neon");
+            btn.classList.remove("bg-primary", "border-primary");
             btn.style.color = ""; // Reset inline style
             btn.classList.add("border-slate-600");
             btn.style.color = "var(--color-tab-text)";

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <g stroke="#ffffff" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Logotipo principal -->
+    <path d="M 100 65
+             Q 70 40 30 15
+             Q 45 45 55 75
+             Q 35 85 15 95
+             Q 40 115 65 130
+             Q 85 160 100 185
+             Q 115 160 135 130
+             Q 160 115 185 95
+             Q 165 85 145 75
+             Q 155 45 170 15
+             Q 130 40 100 65 Z" />
+    <!-- Olho esquerdo -->
+    <path d="M 60 105 Q 75 115 85 105 Q 70 95 60 105 Z" fill="#ffffff" stroke="none" />
+    <!-- Olho direito -->
+    <path d="M 140 105 Q 125 115 115 105 Q 130 95 140 105 Z" fill="#ffffff" stroke="none" />
+  </g>
+</svg>
