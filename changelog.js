@@ -69,7 +69,7 @@ function openChangelogModal() {
       .join("");
 
     const html = `
-      <div id="changelog-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 pl-0 md:pl-28 opacity-0 transition-opacity duration-300 pointer-events-none" style="color: white; font-family: 'Outfit', sans-serif;">
+      <div id="changelog-modal" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-4 pl-0 md:pl-28 opacity-0 transition-opacity duration-300 pointer-events-none" style="color: white; font-family: 'Outfit', sans-serif;">
         <div class="glass-card max-w-2xl w-full max-h-[85vh] rounded-2xl flex flex-col shadow-2xl border border-primary/30 transform scale-95 transition-transform duration-300" id="changelog-modal-content">
           <div class="p-5 md:px-8 border-b border-primary/20 flex justify-between items-center bg-primary/5 rounded-t-2xl">
             <div class="flex items-center gap-3">
