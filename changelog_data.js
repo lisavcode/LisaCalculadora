@@ -14,7 +14,6 @@ const changelogData = [
     changes: [
       "Adicionado informações sobre Ingredientes ao colocar o mouse em cima dos itens nas abas Calculadora e Encomendas.",
       "Adicionado tabelas de criadores (Caçador, Alquimista, Minerador, Artesão, Ferreiro, Alfaiate e Treinador).",
-      "Alterado nome do botão 'Acessar Loja' para 'Entrar em Contato'.",
       "Removido espaços de sobra do visual dos componentes (cards).",
     ],
   },
