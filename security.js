@@ -27,6 +27,8 @@
     // --- 2. Desabilitar Seleção e Arrastar ---
     if (Config.Security.DisableTextSelection) {
       document.addEventListener("selectstart", function (e) {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+          return;
         e.preventDefault();
         log("Seleção de texto bloqueada.");
       });
@@ -43,6 +45,12 @@
                     -moz-user-select: none;
                     -ms-user-select: none;
                     user-select: none;
+                }
+                input, textarea {
+                    -webkit-user-select: text !important;
+                    -moz-user-select: text !important;
+                    -ms-user-select: text !important;
+                    user-select: text !important;
                 }
             `;
       document.head.appendChild(style);
@@ -67,6 +75,8 @@
           e.ctrlKey &&
           ["c", "a", "x", "s", "p"].includes(e.key.toLowerCase())
         ) {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+            return;
           e.preventDefault();
           log(`Atalho Ctrl+${e.key.toUpperCase()} bloqueado.`);
           return false;

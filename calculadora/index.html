@@ -147,6 +147,22 @@
           >
             Alfaiate
           </button>
+          <button
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
+            style="color: var(--color-tab-text)"
+            data-tab="ferreiro"
+            onclick="setTab('ferreiro')"
+          >
+            Ferreiro
+          </button>
+          <button
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
+            style="color: var(--color-tab-text)"
+            data-tab="treinador"
+            onclick="setTab('treinador')"
+          >
+            Treinador
+          </button>
         </div>
       </header>
 
@@ -260,6 +276,25 @@
     <script src="../professions/minerador.js"></script>
     <script src="../professions/artesao.js"></script>
     <script src="../professions/alfaiate.js"></script>
+    <script src="../professions/ferreiro.js"></script>
+    <script src="../professions/treinador.js"></script>
+    <script>
+      // Processar dados assim que carregados
+      (function preprocessData() {
+        if (typeof applyRounding === "undefined") {
+          window.applyRounding = function (value) {
+            if (value < 1) return value;
+            return Math.round(value);
+          };
+        }
+        for (let prof in dataByProfession) {
+          dataByProfession[prof].forEach((item) => {
+            if (item.min !== undefined) item.min = applyRounding(item.min);
+            if (item.max !== undefined) item.max = applyRounding(item.max);
+          });
+        }
+      })();
+    </script>
 
     <script>
       let currentTab = "cacador";
@@ -298,6 +333,11 @@
         calculate();
       }
 
+      function applyRounding(value) {
+        if (value < 1) return value;
+        return Math.round(value);
+      }
+
       function formatMoneyConverted(amount) {
         let totalBz = Math.floor(amount);
         let oz = Math.floor(totalBz / 10000);
@@ -314,14 +354,18 @@
           parts.push(
             `<span class="text-coin-sz font-bold drop-shadow-sm">${sz} Sz</span>`,
           );
-        if (bz > 0 || parts.length === 0) {
+
+        const hasDecimals = amount % 1 !== 0;
+        if (bz > 0 || parts.length === 0 || hasDecimals) {
+          let bzDisplay = bz;
+          if (hasDecimals) {
+            bzDisplay = (bz + (amount % 1)).toLocaleString("pt-BR", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            });
+          }
           parts.push(
-            `<span class="text-coin-bz font-bold drop-shadow-sm">${bz} Bz</span>`,
-          );
-        } else if (amount % 1 !== 0) {
-          let decimals = (amount % 1).toFixed(2).substring(2);
-          parts.push(
-            `<span class="text-coin-bz font-bold drop-shadow-sm">0,${decimals} Bz</span>`,
+            `<span class="text-coin-bz font-bold drop-shadow-sm">${bzDisplay} Bz</span>`,
           );
         }
         return parts.join(", ");
@@ -332,13 +376,13 @@
       }
 
       function createItemCard(item, qty, index) {
-        const totalMin = item.min * qty;
-        const totalMax = item.max * qty;
+        const totalMin = applyRounding(item.min * qty);
+        const totalMax = applyRounding(item.max * qty);
         const storedPrice =
           customPrices[item.name] !== undefined
             ? customPrices[item.name]
             : item.min;
-        const currentTotal = storedPrice * qty;
+        const currentTotal = applyRounding(storedPrice * qty);
 
         let percent = 0;
         if (item.max > item.min) {
@@ -377,6 +421,22 @@
                                 <span class="text-[9px] mx-1" style="color: var(--color-text-muted)">até</span>
                                 ${formatMoneyConverted(totalMax)}
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-primary/10 border border-primary/20 p-1.5 rounded-lg w-full flex flex-col items-center justify-center cursor-help group/info transition-all mt-2">
+                        <div class="text-[10px] text-primary uppercase font-bold tracking-wider group-hover/info:hidden">Ingredientes</div>
+                        <div class="hidden group-hover/info:flex flex-col items-center text-[10px] w-full" style="color: var(--color-text-muted)">
+                            ${
+                              item.ingredients && item.ingredients.length > 0
+                                ? item.ingredients
+                                    .map(
+                                      (ing) =>
+                                        `<span>${ing.qty}x ${ing.item}</span>`,
+                                    )
+                                    .join("")
+                                : "<span>Nenhum ingrediente</span>"
+                            }
                         </div>
                     </div>
 
@@ -436,7 +496,7 @@
 
         rangeInput.style.background = `linear-gradient(to right, var(--color-primary) ${percent}%, var(--color-bar-bg) ${percent}%)`;
 
-        const total = val * qty;
+        const total = applyRounding(val * qty);
         totalDisplay.innerHTML = `
                 <div class="flex justify-between items-end gap-2">
                     <span class="text-[9px] text-primary font-bold shrink-0">Total</span>
