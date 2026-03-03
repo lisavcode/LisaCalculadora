@@ -1,5 +1,12 @@
 const changelogData = [
   {
+    version: "1.1.3",
+    date: "03/03/2026",
+    changes: [
+      "Arrumado bug quando abre a aba de notas de atualização ele congelava a tela.",
+    ],
+  },
+  {
     version: "1.1.2",
     date: "03/03/2026",
     changes: [
