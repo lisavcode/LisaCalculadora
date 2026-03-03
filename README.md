@@ -1,4 +1,4 @@
-# 🌟 Calculadora Icarus (LisaCalculadora)
+# 🌟 LisaCalculadora
 
 Uma incrível e linda calculadora de itens e valores feita com design moderno em TailwindCSS! Construída especialmente para facilitar cálculos precisos de valores de diferentes itens e categorias, incluindo um visual premium com efeitos glassmorphism e cores neon suaves.
 
