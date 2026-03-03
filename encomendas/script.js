@@ -93,15 +93,15 @@ const NotesManager = {
   // Helper from Calculator
   formatMoneyConverted(amount) {
     let totalBz = Math.floor(amount);
-    let oz = Math.floor(totalBz / 10000);
+    let gz = Math.floor(totalBz / 10000);
     let remainderAfterOz = totalBz % 10000;
     let sz = Math.floor(remainderAfterOz / 100);
     let bz = remainderAfterOz % 100;
 
     let parts = [];
-    if (oz > 0)
+    if (gz > 0)
       parts.push(
-        `<span class="text-coin-oz font-bold drop-shadow-sm">${oz} Oz</span>`,
+        `<span class="text-coin-gz font-bold drop-shadow-sm">${gz} Gz</span>`,
       );
     if (sz > 0)
       parts.push(
@@ -383,7 +383,7 @@ const NotesManager = {
           )
           .join("");
 
-        // Price Display: Using ItemPicker.formatMoney for Oz/Sz/Bz
+        // Price Display: Using ItemPicker.formatMoney for Gz/Sz/Bz
         const formattedPrice = ItemPicker.formatMoney(order.totalPrice);
         const rawBz = Math.floor(order.totalPrice).toLocaleString("pt-BR");
 
@@ -635,21 +635,21 @@ const ItemPicker = {
 
   formatMoney(amount) {
     let totalBz = Math.floor(amount);
-    let oz = Math.floor(totalBz / 10000);
+    let gz = Math.floor(totalBz / 10000);
     let remainder = totalBz % 10000;
     let sz = Math.floor(remainder / 100);
     let bz = remainder % 100;
 
     let parts = [];
-    if (oz > 0)
+    if (gz > 0)
       parts.push(
-        `<span class="text-coin-oz font-bold drop-shadow-sm">${oz} Oz</span>`,
+        `<span class="text-coin-gz font-bold drop-shadow-sm">${gz} Gz</span>`,
       );
     if (sz > 0)
       parts.push(
         `<span class="text-coin-sz font-bold drop-shadow-sm">${sz} Sz</span>`,
       );
-    if (bz > 0 || (oz === 0 && sz === 0))
+    if (bz > 0 || (gz === 0 && sz === 0))
       parts.push(
         `<span class="text-coin-bz font-bold drop-shadow-sm">${bz} Bz</span>`,
       );
@@ -660,13 +660,13 @@ const ItemPicker = {
   formatMoneyShort(amount) {
     // Helper for Card View simplified
     let totalBz = Math.floor(amount);
-    let oz = Math.floor(totalBz / 10000);
+    let gz = Math.floor(totalBz / 10000);
     let remainder = totalBz % 10000;
     let sz = Math.floor(remainder / 100);
     let bz = remainder % 100;
 
     let parts = [];
-    if (oz > 0) parts.push(`${oz}oz`);
+    if (gz > 0) parts.push(`${gz}gz`);
     if (sz > 0) parts.push(`${sz}sz`);
     if (bz > 0 || parts.length === 0) parts.push(`${bz}bz`);
     return parts.join(" ");

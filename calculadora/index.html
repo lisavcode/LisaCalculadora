@@ -22,7 +22,7 @@
               secondary: "rgb(var(--color-secondary-rgb) / <alpha-value>)",
               bg: "var(--color-bg)",
               surface: "var(--color-surface)",
-              "coin-oz": "var(--color-coin-oz)",
+              "coin-gz": "var(--color-coin-gz)",
               "coin-sz": "var(--color-coin-sz)",
               "coin-bz": "var(--color-coin-bz)",
             },
@@ -334,21 +334,24 @@
       }
 
       function applyRounding(value) {
-        if (value < 1) return value;
+        // Se o valor for decimal, preserva até 2 casas para não arredondar forçado
+        if (value % 1 !== 0) {
+          return Number(value.toFixed(2));
+        }
         return Math.round(value);
       }
 
       function formatMoneyConverted(amount) {
         let totalBz = Math.floor(amount);
-        let oz = Math.floor(totalBz / 10000);
+        let gz = Math.floor(totalBz / 10000);
         let remainderAfterOz = totalBz % 10000;
         let sz = Math.floor(remainderAfterOz / 100);
         let bz = remainderAfterOz % 100;
 
         let parts = [];
-        if (oz > 0)
+        if (gz > 0)
           parts.push(
-            `<span class="text-coin-oz font-bold drop-shadow-sm">${oz} Gz</span>`,
+            `<span class="text-coin-gz font-bold drop-shadow-sm">${gz} Gz</span>`,
           );
         if (sz > 0)
           parts.push(

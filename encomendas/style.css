@@ -151,8 +151,8 @@ body {
 }
 
 /* Currency Colors */
-.text-coin-oz {
-  color: var(--color-coin-oz) !important;
+.text-coin-gz {
+  color: var(--color-coin-gz) !important;
 }
 .text-coin-sz {
   color: var(--color-coin-sz) !important;

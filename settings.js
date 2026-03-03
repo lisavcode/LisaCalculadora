@@ -4,7 +4,7 @@ const DefaultThemes = {
     "--color-secondary": "#0a0000",
     "--color-bg": "#000005",
     "--color-surface": "#0c161d",
-    "--color-coin-oz": "#ffd700",
+    "--color-coin-gz": "#ffd700",
     "--color-coin-sz": "#92b5c5",
     "--color-coin-bz": "#cd7f32",
     "--color-border": "#161f22",
@@ -28,7 +28,7 @@ const DefaultThemes = {
     "--color-secondary": "#c7c7c7",
     "--color-bg": "#c3c8cc",
     "--color-surface": "#ffffff",
-    "--color-coin-oz": "#d4af37",
+    "--color-coin-gz": "#d4af37",
     "--color-coin-sz": "#607d8b",
     "--color-coin-bz": "#a0522d",
     "--color-border": "#cbd5e1",
@@ -52,7 +52,7 @@ const DefaultThemes = {
     "--color-secondary": "#190606",
     "--color-bg": "#000000",
     "--color-surface": "#111111",
-    "--color-coin-oz": "#ffd700",
+    "--color-coin-gz": "#ffd700",
     "--color-coin-sz": "#92b5c5",
     "--color-coin-bz": "#cd7f32",
     "--color-border": "#330000",
@@ -76,7 +76,7 @@ const DefaultThemes = {
     "--color-secondary": "#141414",
     "--color-bg": "#000000",
     "--color-surface": "#121212",
-    "--color-coin-oz": "#e0e0e0",
+    "--color-coin-gz": "#e0e0e0",
     "--color-coin-sz": "#a0a0a0",
     "--color-coin-bz": "#606060",
     "--color-border": "#333333",
@@ -470,7 +470,7 @@ const Settings = {
                 --color-secondary: #7b2cbf;
                 --color-bg: #0f172a;
                 --color-surface: #1e293b;
-                --color-coin-oz: #ffd700;
+                --color-coin-gz: #ffd700;
                 --color-coin-sz: #92b5c5;
                 --color-coin-bz": #cd7f32;
                 --color-border: #333333;
@@ -775,7 +775,7 @@ const Settings = {
       "--color-card-bg": "Fundo do Cartão",
       "--color-estimate-bg": "Fundo da Estimativa",
       "--color-bar-bg": "Fundo da Barra",
-      "--color-coin-oz": "Moeda Ouro",
+      "--color-coin-gz": "Moeda Ouro",
       "--color-coin-sz": "Moeda Prata",
       "--color-coin-bz": "Moeda Bronze",
     };
