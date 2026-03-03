@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Icarus</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Outfit", "sans-serif"],
+            },
+            colors: {
+              primary: "rgb(var(--color-primary-rgb) / <alpha-value>)",
+              secondary: "rgb(var(--color-secondary-rgb) / <alpha-value>)",
+              bg: "var(--color-bg)",
+              surface: "var(--color-surface)",
+              "coin-oz": "var(--color-coin-oz)",
+              "coin-sz": "var(--color-coin-sz)",
+              "coin-bz": "var(--color-coin-bz)",
+            },
+            boxShadow: {
+              neon: "0 0 5px rgb(var(--color-primary-rgb) / 0.3)",
+              "neon-hover": "0 0 10px rgb(var(--color-primary-rgb) / 0.6)",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        background-color: var(--color-bg);
+        background-image:
+          radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.3) 0, transparent 50%),
+          radial-gradient(at 50% 0%, var(--color-surface) 0, transparent 50%),
+          radial-gradient(at 100% 0%, var(--color-secondary) 0, transparent 50%);
+        background-attachment: fixed;
+        color: var(--color-text);
+      }
+      .glass-card {
+        background: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+      }
+      .range-slider {
+        -webkit-appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--color-bar-bg);
+        outline: none;
+      }
+      .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--color-primary);
+        cursor: pointer;
+        box-shadow: 0 0 10px rgb(var(--color-primary-rgb) / 0.8);
+        transition: transform 0.2s;
+        margin-bottom: 2px;
+      }
+      .range-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      /* Era Badges Colors */
+      .badge-era-0 {
+        background-color: var(--color-input-bg);
+        color: var(--color-text);
+      }
+      .badge-era-1 {
+        @apply bg-green-500 text-white shadow-lg shadow-green-500/20;
+      }
+      .badge-era-2 {
+        @apply bg-blue-500 text-white shadow-lg shadow-blue-500/20;
+      }
+      .badge-era-3 {
+        @apply bg-purple-500 text-white shadow-lg shadow-purple-500/20;
+      }
+      .badge-era-4 {
+        @apply bg-orange-500 text-white shadow-lg shadow-orange-500/20;
+      }
+      .badge-era-5 {
+        @apply bg-red-500 text-white shadow-lg shadow-red-500/20;
+      }
+      .badge-era-6 {
+        @apply bg-black text-yellow-400 border border-yellow-400 shadow-lg shadow-yellow-500/20;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen font-sans p-4 md:p-8">
+    <div class="max-w-7xl mx-auto w-full">
+      <!-- Header -->
+      <header class="text-center mb-8">
+        <h1
+          class="text-3xl md:text-5xl font-bold text-primary mb-2 tracking-wider uppercase drop-shadow-md"
+        >
+          Calculadora
+        </h1>
+
+        <!-- Tabs -->
+        <div class="flex flex-wrap justify-center gap-3 mt-6">
+          <button
+            class="tab-btn active px-6 py-2 rounded-full border border-primary bg-primary font-bold transition-all"
+            style="color: var(--color-text-on-primary)"
+            data-tab="cacador"
+            onclick="setTab('cacador')"
+          >
+            Caçador
+          </button>
+          <button
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
+            style="color: var(--color-tab-text)"
+            data-tab="alquimista"
+            onclick="setTab('alquimista')"
+          >
+            Alquimista
+          </button>
+          <button
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
+            style="color: var(--color-tab-text)"
+            data-tab="minerador"
+            onclick="setTab('minerador')"
+          >
+            Minerador
+          </button>
+          <button
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
+            style="color: var(--color-tab-text)"
+            data-tab="artesao"
+            onclick="setTab('artesao')"
+          >
+            Artesão
+          </button>
+          <button
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50 hover:text-primary"
+            style="color: var(--color-tab-text)"
+            data-tab="alfaiate"
+            onclick="setTab('alfaiate')"
+          >
+            Alfaiate
+          </button>
+        </div>
+      </header>
+
+      <!-- Controls -->
+      <div
+        class="glass-card p-4 rounded-xl mb-6 sticky top-4 z-50 shadow-xl border border-primary/20"
+      >
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-grow flex gap-2">
+            <div class="relative flex-grow">
+              <input
+                type="text"
+                id="search"
+                placeholder="Buscar item..."
+                autocomplete="off"
+                class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                style="
+                  background: var(--color-input-bg);
+                  border-color: var(--color-input-border);
+                  color: var(--color-text);
+                "
+              />
+              <div class="absolute right-3 top-3 text-slate-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <input
+              type="number"
+              id="quantity"
+              value="1"
+              min="1"
+              placeholder="Qtd"
+              class="w-24 border rounded-lg px-2 py-3 text-center font-bold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              style="
+                background: var(--color-input-bg);
+                border-color: var(--color-input-border);
+                color: var(--color-text);
+              "
+            />
+          </div>
+
+          <div class="flex gap-2 min-w-[300px]">
+            <select
+              id="filter-era"
+              class="flex-grow border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer appearance-none"
+              style="
+                background: var(--color-input-bg);
+                border-color: var(--color-input-border);
+                color: var(--color-text);
+              "
+            >
+              <option value="all">Todas as Eras</option>
+              <option value="1">Era 1</option>
+              <option value="2">Era 2</option>
+              <option value="3">Era 3</option>
+              <option value="4">Era 4</option>
+              <option value="5">Era 5</option>
+              <option value="6">Era 6</option>
+              <option value="0">Sem Era</option>
+            </select>
+            <select
+              id="sort-order"
+              class="flex-grow border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer appearance-none"
+              style="
+                background: var(--color-input-bg);
+                border-color: var(--color-input-border);
+                color: var(--color-text);
+              "
+            >
+              <option value="default">Sem Filtro</option>
+              <option value="era-asc">Era: Menor &uarr;</option>
+              <option value="era-desc">Era: Maior &darr;</option>
+              <option value="price-asc">Preço: Menor &uarr;</option>
+              <option value="price-desc">Preço: Maior &darr;</option>
+              <option value="name-asc">Nome: A-Z</option>
+              <option value="name-desc">Nome: Z-A</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div
+        id="results"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-20"
+      ></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../config.js"></script>
+    <script src="../settings.js"></script>
+    <script src="../security.js"></script>
+    <script>
+      const dataByProfession = {};
+    </script>
+    <script src="../professions/cacador.js"></script>
+    <script src="../professions/alquimista.js"></script>
+    <script src="../professions/minerador.js"></script>
+    <script src="../professions/artesao.js"></script>
+    <script src="../professions/alfaiate.js"></script>
+
+    <script>
+      let currentTab = "cacador";
+      const searchInput = document.getElementById("search");
+      const quantityInput = document.getElementById("quantity");
+      const filterEraSelect = document.getElementById("filter-era");
+      const sortOrderSelect = document.getElementById("sort-order");
+      const resultsContainer = document.getElementById("results");
+
+      let customPrices = {};
+      try {
+        const saved = localStorage.getItem("customPrices");
+        if (saved) customPrices = JSON.parse(saved);
+      } catch (e) {
+        console.error("Error loading custom prices:", e);
+      }
+
+      function setTab(tabName) {
+        currentTab = tabName;
+        localStorage.setItem("lastTab", tabName);
+
+        // Update UI tabs
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          if (btn.dataset.tab === tabName) {
+            btn.classList.add("bg-primary", "border-primary");
+            btn.style.color = "var(--color-text-on-primary)";
+            btn.classList.remove("text-slate-400", "border-slate-600");
+          } else {
+            btn.classList.remove("bg-primary", "border-primary");
+            btn.style.color = ""; // Reset inline style
+            btn.classList.add("border-slate-600");
+            btn.style.color = "var(--color-tab-text)";
+          }
+        });
+
+        calculate();
+      }
+
+      function formatMoneyConverted(amount) {
+        let totalBz = Math.floor(amount);
+        let oz = Math.floor(totalBz / 10000);
+        let remainderAfterOz = totalBz % 10000;
+        let sz = Math.floor(remainderAfterOz / 100);
+        let bz = remainderAfterOz % 100;
+
+        let parts = [];
+        if (oz > 0)
+          parts.push(
+            `<span class="text-coin-oz font-bold drop-shadow-sm">${oz} Gz</span>`,
+          );
+        if (sz > 0)
+          parts.push(
+            `<span class="text-coin-sz font-bold drop-shadow-sm">${sz} Sz</span>`,
+          );
+        if (bz > 0 || parts.length === 0) {
+          parts.push(
+            `<span class="text-coin-bz font-bold drop-shadow-sm">${bz} Bz</span>`,
+          );
+        } else if (amount % 1 !== 0) {
+          let decimals = (amount % 1).toFixed(2).substring(2);
+          parts.push(
+            `<span class="text-coin-bz font-bold drop-shadow-sm">0,${decimals} Bz</span>`,
+          );
+        }
+        return parts.join(", ");
+      }
+
+      function formatRawBz(value) {
+        return `<span class="text-slate-400 text-xs">${value.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} Bz</span>`;
+      }
+
+      function createItemCard(item, qty, index) {
+        const totalMin = item.min * qty;
+        const totalMax = item.max * qty;
+        const storedPrice =
+          customPrices[item.name] !== undefined
+            ? customPrices[item.name]
+            : item.min;
+        const currentTotal = storedPrice * qty;
+
+        let percent = 0;
+        if (item.max > item.min) {
+          percent = ((storedPrice - item.min) / (item.max - item.min)) * 100;
+        }
+        percent = Math.min(Math.max(percent, 0), 100);
+
+        const inputId = `custom-input-${index}`;
+        const rangeId = `custom-range-${index}`;
+        const totalId = `custom-total-${index}`;
+        const safeName = item.name.replace(/'/g, "\\'");
+
+        const era = item.era !== undefined ? item.era : 0;
+        const eraText = era === 0 ? "Sem Era" : `Era ${era}`;
+        const badgeClass = `badge-era-${era}`;
+
+        return `
+                <div class="glass-card p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-all duration-300 group h-full w-full overflow-hidden">
+                    <div class="flex justify-between items-start pb-2 gap-2" style="border-bottom: 1px solid var(--color-border)">
+                        <h3 class="text-base font-bold text-primary transition-colors leading-tight line-clamp-2 break-words flex-1" onmouseover="this.style.color='var(--color-text-hover)'" onmouseout="this.style.color=''"> ${item.name}</h3>
+                        <span class="${badgeClass} text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shrink-0 mt-0.5">${eraText}</span>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 text-xs w-full">
+                        <div class="flex justify-between items-center gap-2">
+                            <span class="text-[10px] font-semibold uppercase shrink-0" style="color: var(--color-text-muted)">Unitário</span>
+                            <div class="text-right text-[11px] min-w-0 break-words flex-1">
+                                ${formatMoneyConverted(item.min)} <span class="text-[10px]" style="color: var(--color-text-muted)">-</span> ${formatMoneyConverted(item.max)}
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center p-1.5 rounded-lg gap-2" style="background: var(--color-estimate-bg)">
+                            <span class="text-[10px] font-semibold uppercase shrink-0" style="color: var(--color-text-muted)">Estimativa</span>
+                            <div class="text-right text-[11px] min-w-0 break-words flex-1">
+                                ${formatMoneyConverted(totalMin)}
+                                <span class="text-[9px] mx-1" style="color: var(--color-text-muted)">até</span>
+                                ${formatMoneyConverted(totalMax)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-2 w-full" style="border-top: 1px solid var(--color-border)">
+                        <div class="flex justify-between items-center mb-1 gap-2">
+                            <span class="text-primary text-[10px] uppercase font-bold tracking-wider shrink-0">Personalizado</span>
+                            <input type="number" id="${inputId}" min="${item.min}" max="${item.max}" step="0.01" value="${storedPrice}"
+                                   oninput="updateCustomPrice(${index}, '${safeName}', this.value, 'input')"
+                                   class="w-16 text-[10px] rounded px-1 py-0.5 text-right focus:border-primary outline-none transition-colors shrink-0"
+                                   style="background: var(--color-input-bg); border: 1px solid var(--color-input-border); color: var(--color-text)">
+                        </div>
+
+                        <input type="range" id="${rangeId}" min="${item.min}" max="${item.max}" step="0.01" value="${storedPrice}"
+                               oninput="updateCustomPrice(${index}, '${safeName}', this.value, 'range')"
+                               class="range-slider w-full mb-3 h-1 shrink-0"
+                               style="background: linear-gradient(to right, var(--color-primary) ${percent}%, var(--color-bar-bg) ${percent}%)">
+
+                        <div id="${totalId}" class="text-right bg-primary/10 border border-primary/20 p-1.5 rounded-lg w-full">
+                            <div class="flex justify-between items-end gap-2">
+                                <span class="text-[9px] text-primary font-bold shrink-0">Total</span>
+                                <div class="min-w-0 break-words flex-1 flex flex-col items-end">
+                                    <div class="text-[13px] font-bold leading-tight break-all">${formatMoneyConverted(currentTotal)}</div>
+                                    <div class="text-[9px] leading-tight mt-0.5 break-all" style="color: var(--color-text-muted)">${Math.floor(currentTotal).toLocaleString("pt-BR")} Bz</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function updateCustomPrice(index, itemName, value, source) {
+        const qty = parseFloat(quantityInput.value) || 0;
+        const rangeInput = document.getElementById(`custom-range-${index}`);
+        const numberInput = document.getElementById(`custom-input-${index}`);
+        const totalDisplay = document.getElementById(`custom-total-${index}`);
+
+        const min = parseFloat(rangeInput.min);
+        const max = parseFloat(rangeInput.max);
+        let val = parseFloat(value);
+
+        if (isNaN(val)) val = min;
+        if (val > max) val = max;
+        if (val < min) val = min;
+
+        if (customPrices) {
+          customPrices[itemName] = val;
+          localStorage.setItem("customPrices", JSON.stringify(customPrices));
+        }
+
+        if (source === "range") numberInput.value = val;
+        else rangeInput.value = val;
+
+        let percent = 0;
+        if (max > min) percent = ((val - min) / (max - min)) * 100;
+        percent = Math.min(Math.max(percent, 0), 100);
+
+        rangeInput.style.background = `linear-gradient(to right, var(--color-primary) ${percent}%, var(--color-bar-bg) ${percent}%)`;
+
+        const total = val * qty;
+        totalDisplay.innerHTML = `
+                <div class="flex justify-between items-end gap-2">
+                    <span class="text-[9px] text-primary font-bold shrink-0">Total</span>
+                    <div class="min-w-0 break-words flex-1 flex flex-col items-end">
+                        <div class="text-[13px] font-bold leading-tight break-all">${formatMoneyConverted(total)}</div>
+                        <div class="text-[9px] leading-tight mt-0.5 break-all" style="color: var(--color-text-muted)">${Math.floor(total).toLocaleString("pt-BR")} Bz</div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderGroupedList(items, qty) {
+        resultsContainer.innerHTML = "";
+        const grouped = items.reduce((acc, item) => {
+          if (!acc[item.cat]) acc[item.cat] = [];
+          acc[item.cat].push(item);
+          return acc;
+        }, {});
+
+        let globalIndex = 0;
+        for (const [category, groupItems] of Object.entries(grouped)) {
+          const catElement = document.createElement("div");
+          catElement.className =
+            "col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-5 mt-4 mb-2 border-b border-primary/30 pb-1";
+          catElement.innerHTML = `<h2 class="text-xl font-bold text-primary uppercase tracking-widest pl-2 border-l-4 border-primary">${category}</h2>`;
+          resultsContainer.appendChild(catElement);
+
+          groupItems.forEach((item) => {
+            const cardWrapper = document.createElement("div");
+            cardWrapper.innerHTML = createItemCard(item, qty, globalIndex++);
+            resultsContainer.appendChild(cardWrapper.firstElementChild);
+          });
+        }
+      }
+
+      function renderLinearList(items, qty) {
+        resultsContainer.innerHTML = "";
+        items.forEach((item, index) => {
+          const cardWrapper = document.createElement("div");
+          cardWrapper.innerHTML = createItemCard(item, qty, index);
+          resultsContainer.appendChild(cardWrapper.firstElementChild);
+        });
+      }
+
+      function calculate() {
+        const query = searchInput.value.toLowerCase();
+        let qty = parseFloat(quantityInput.value);
+        if (!qty || qty < 0) qty = 0;
+
+        const eraFilter = filterEraSelect.value;
+        const sortOrder = sortOrderSelect.value;
+        const currentDatabase = dataByProfession[currentTab] || [];
+        let filteredItems = [...currentDatabase];
+
+        // 1. Filter by Search
+        if (query.length > 0) {
+          filteredItems = filteredItems.filter(
+            (item) =>
+              item.name.toLowerCase().includes(query) ||
+              (item.cat && item.cat.toLowerCase().includes(query)),
+          );
+        }
+
+        // 2. Filter by Era
+        if (eraFilter !== "all") {
+          const eraNum = parseInt(eraFilter);
+          filteredItems = filteredItems.filter((item) => {
+            const itemEra = item.era !== undefined ? item.era : 0;
+            return itemEra === eraNum;
+          });
+        }
+
+        // 3. Sort
+        if (sortOrder !== "default") {
+          filteredItems.sort((a, b) => {
+            const priceA =
+              customPrices[a.name] !== undefined ? customPrices[a.name] : a.min;
+            const priceB =
+              customPrices[b.name] !== undefined ? customPrices[b.name] : b.min;
+
+            switch (sortOrder) {
+              case "price-asc":
+                return priceA - priceB;
+              case "price-desc":
+                return priceB - priceA;
+              case "name-asc":
+                return a.name.localeCompare(b.name);
+              case "name-desc":
+                return b.name.localeCompare(a.name);
+              case "era-asc": {
+                const valA = (a.era || 0) === 0 ? 999 : a.era || 0;
+                const valB = (b.era || 0) === 0 ? 999 : b.era || 0;
+                return valA - valB;
+              }
+              case "era-desc": {
+                const valA = (a.era || 0) === 0 ? 999 : a.era || 0;
+                const valB = (b.era || 0) === 0 ? 999 : b.era || 0;
+                return valB - valA;
+              }
+              default:
+                return 0;
+            }
+          });
+        }
+
+        resultsContainer.innerHTML = "";
+        if (filteredItems.length === 0) {
+          resultsContainer.innerHTML =
+            '<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-slate-500 py-10 italic">Nenhum item encontrado.</div>';
+          return;
+        }
+
+        if (sortOrder === "default") renderGroupedList(filteredItems, qty);
+        else renderLinearList(filteredItems, qty);
+      }
+
+      searchInput.addEventListener("input", calculate);
+      quantityInput.addEventListener("input", calculate);
+      filterEraSelect.addEventListener("change", calculate);
+      sortOrderSelect.addEventListener("change", calculate);
+
+      const savedTabSession = localStorage.getItem("lastTab");
+      setTab(savedTabSession || "cacador");
+    </script>
+  </body>
+</html>
