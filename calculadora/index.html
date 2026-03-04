@@ -76,22 +76,130 @@
         color: var(--color-text);
       }
       .badge-era-1 {
-        @apply bg-green-500 text-white shadow-lg shadow-green-500/20;
+        background-color: #22c55e;
+        color: white;
+        box-shadow:
+          0 10px 15px -3px rgb(34 197 94 / 0.2),
+          0 4px 6px -4px rgb(34 197 94 / 0.2);
       }
       .badge-era-2 {
-        @apply bg-blue-500 text-white shadow-lg shadow-blue-500/20;
+        background-color: #3b82f6;
+        color: white;
+        box-shadow:
+          0 10px 15px -3px rgb(59 130 246 / 0.2),
+          0 4px 6px -4px rgb(59 130 246 / 0.2);
       }
       .badge-era-3 {
-        @apply bg-purple-500 text-white shadow-lg shadow-purple-500/20;
+        background-color: #a855f7;
+        color: white;
+        box-shadow:
+          0 10px 15px -3px rgb(168 85 247 / 0.2),
+          0 4px 6px -4px rgb(168 85 247 / 0.2);
       }
       .badge-era-4 {
-        @apply bg-orange-500 text-white shadow-lg shadow-orange-500/20;
+        background-color: #f97316;
+        color: white;
+        box-shadow:
+          0 10px 15px -3px rgb(249 115 22 / 0.2),
+          0 4px 6px -4px rgb(249 115 22 / 0.2);
       }
       .badge-era-5 {
-        @apply bg-red-500 text-white shadow-lg shadow-red-500/20;
+        background-color: #ef4444;
+        color: white;
+        box-shadow:
+          0 10px 15px -3px rgb(239 68 68 / 0.2),
+          0 4px 6px -4px rgb(239 68 68 / 0.2);
       }
-      .badge-era-6 {
-        @apply bg-black text-yellow-400 border border-yellow-400 shadow-lg shadow-yellow-500/20;
+      .treinador-range-slider {
+        -webkit-appearance: none;
+        outline: none;
+      }
+      .treinador-range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--color-primary);
+        cursor: pointer;
+        box-shadow: 0 0 10px rgb(var(--color-primary-rgb) / 0.8);
+        transition: transform 0.2s;
+        margin-bottom: 2px;
+      }
+      .treinador-range-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+      .treinador-card {
+        border-color: rgb(var(--color-primary-rgb) / 0.3);
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1),
+          inset 0 1px 0 0 rgb(255 255 255 / 0.1);
+      }
+      .treinador-card:hover {
+        border-color: rgb(var(--color-primary-rgb) / 0.6);
+        box-shadow:
+          0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1),
+          0 0 20px rgb(var(--color-primary-rgb) / 0.2),
+          inset 0 1px 0 0 rgb(255 255 255 / 0.1);
+        transform: translateY(-2px);
+      }
+      .treinador-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom right,
+          rgb(var(--color-primary-rgb) / 0.1),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .treinador-card:hover::before {
+        opacity: 1;
+      }
+      .treinador-card > * {
+        z-index: 1;
+      }
+      .treinador-card-title {
+        color: var(--color-primary);
+      }
+      .treinador-badge {
+        background-color: rgb(var(--color-primary-rgb) / 0.15);
+        color: var(--color-primary);
+        border-color: rgb(var(--color-primary-rgb) / 0.4);
+        box-shadow: 0 0 8px rgb(var(--color-primary-rgb) / 0.2);
+      }
+      .treinador-info-panel {
+        background-color: rgb(var(--color-primary-rgb) / 0.05);
+        border-color: rgb(var(--color-primary-rgb) / 0.2);
+      }
+      .treinador-label {
+        color: rgb(var(--color-primary-rgb) / 0.8);
+      }
+      .treinador-value {
+        color: var(--color-text);
+      }
+
+      .favorite-btn {
+        transition: all 0.2s ease;
+      }
+
+      .favorite-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .favorite-btn.is-favorite svg {
+        fill: rgb(234 179 8); /* amber-500 */
+        stroke: rgb(234 179 8);
+      }
+
+      .glass-card.is-favorite {
+        border-color: rgb(var(--color-primary-rgb) / 0.8);
+        box-shadow: 0 0 15px rgb(var(--color-primary-rgb) / 0.3);
       }
     </style>
   </head>
@@ -162,6 +270,20 @@
             onclick="setTab('treinador')"
           >
             Treinador
+          </button>
+        <!-- Action Buttons -->
+        <div class="flex justify-center gap-4 mt-6">
+          <button onclick="openCustomItemModal()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-lg flex items-center gap-2 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Criar Customizado
+          </button>
+          <button onclick="openShareModal()" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all shadow-lg flex items-center gap-2 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+            </svg>
+            Sincronizar (Seed)
           </button>
         </div>
       </header>
@@ -257,11 +379,138 @@
         </div>
       </div>
 
+      <!-- Favorites Section -->
+      <div id="favorites-section" class="hidden mb-8">
+        <h2
+          class="text-2xl font-bold text-amber-500 uppercase tracking-widest pl-3 border-l-4 border-amber-500 mb-4 flex items-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 fill-current"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+            />
+          </svg>
+          Favoritos
+        </h2>
+        <div
+          id="favorites-grid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+        ></div>
+      </div>
+
       <!-- Results Grid -->
       <div
         id="results"
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-20"
       ></div>
+      <!-- Modals and Toasts (Hidden by default) -->
+      <div id="toast-container" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2"></div>
+
+      <!-- Add Custom Item Modal -->
+      <div id="custom-item-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 rounded-xl w-full max-w-md border-primary/50 shadow-2xl transform transition-all">
+          <h2 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Novo Item Customizado
+          </h2>
+          
+          <div class="flex flex-col gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Profissão (Aba)</label>
+              <select id="modal-item-prof" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white">
+                <option value="cacador">Caçador</option>
+                <option value="alquimista">Alquimista</option>
+                <option value="minerador">Minerador</option>
+                <option value="artesao">Artesão</option>
+                <option value="alfaiate">Alfaiate</option>
+                <option value="ferreiro">Ferreiro</option>
+                <option value="treinador">Treinador</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Categoria</label>
+              <input type="text" id="modal-item-cat" placeholder="Ex: Carnes, Frutas, Equipamentos" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Nome do Item</label>
+              <input type="text" id="modal-item-name" placeholder="Ex: Carne de Lobo" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white">
+            </div>
+
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Preço Mínimo</label>
+                <input type="number" step="0.01" min="0" id="modal-item-min" placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white">
+              </div>
+              <div class="flex-1">
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Preço Máximo</label>
+                <input type="number" step="0.01" min="0" id="modal-item-max" placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white">
+              </div>
+              <div class="w-20">
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Era</label>
+                <input type="number" min="0" id="modal-item-era" value="0" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white">
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">Ingredientes (Opcional)</label>
+              <textarea id="modal-item-ing" rows="2" placeholder="Ex: 1x Tecido, 2x Fio" class="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm focus:border-primary outline-none text-white resize-none"></textarea>
+              <p class="text-[10px] text-slate-500 mt-1">Formato sugerido: Qtdx Nome (Ex: 2x Couro)</p>
+            </div>
+          </div>
+          
+          <div class="flex justify-end gap-3 mt-6">
+            <button onclick="closeModal('custom-item-modal')" class="px-4 py-2 rounded font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors">Cancelar</button>
+            <button onclick="saveCustomItem()" class="px-4 py-2 rounded font-bold text-sm bg-primary hover:bg-emerald-500 text-white transition-colors">Salvar Item</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sync / Seed Modal -->
+      <div id="share-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 rounded-xl w-full max-w-lg border-primary/50 shadow-2xl">
+          <h2 class="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+            </svg>
+            Sincronização de Dados
+          </h2>
+          
+          <p class="text-sm text-slate-300 mb-4">Seus Favoritos, Preços Personalizados e Itens Customizados são salvos neste navegador. Use os botões abaixo para transferir seus dados para outro dispositivo.</p>
+          
+          <div class="bg-black/30 p-3 rounded border border-white/10 mb-4">
+            <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Seu Código de Sincronização (Seed)</label>
+            <div class="flex gap-2">
+              <input type="text" id="seed-output" readonly class="flex-1 bg-black/50 border border-white/10 rounded px-3 py-2 text-xs font-mono text-slate-300 outline-none">
+              <button onclick="copySeed()" class="px-3 py-2 bg-primary hover:bg-emerald-500 rounded text-white text-xs font-bold transition-colors">Copiar</button>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-2">* Copie este código e cole-o no formulário abaixo em outro dispositivo.</p>
+          </div>
+
+          <div class="border-t border-white/10 pt-4 mb-4">
+            <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Importar Código</label>
+            <div class="flex gap-2">
+              <input type="text" id="seed-input" placeholder="Cole o código de sincronização aqui..." class="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-xs font-mono focus:border-purple-500 outline-none text-white">
+              <button onclick="importSeed()" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded text-white text-xs font-bold transition-colors">Importar</button>
+            </div>
+          </div>
+          
+          <div class="flex justify-end gap-3 mt-2">
+            <button onclick="closeModal('share-modal')" class="px-4 py-2 rounded font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors">Fechar</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Scripts -->
@@ -279,7 +528,6 @@
     <script src="../professions/ferreiro.js"></script>
     <script src="../professions/treinador.js"></script>
     <script>
-      // Processar dados assim que carregados
       (function preprocessData() {
         if (typeof applyRounding === "undefined") {
           window.applyRounding = function (value) {
@@ -294,6 +542,12 @@
           });
         }
       })();
+
+      // Cache original data to allow resets
+      const originalDataByProfession = {};
+      for(let prof in dataByProfession) {
+          originalDataByProfession[prof] = [...dataByProfession[prof]];
+      }
     </script>
 
     <script>
@@ -303,6 +557,17 @@
       const filterEraSelect = document.getElementById("filter-era");
       const sortOrderSelect = document.getElementById("sort-order");
       const resultsContainer = document.getElementById("results");
+      const favoritesSection = document.getElementById("favorites-section");
+      const favoritesGrid = document.getElementById("favorites-grid");
+      const toastContainer = document.getElementById("toast-container");
+
+      let favoriteItems = [];
+      try {
+        const savedFavs = localStorage.getItem("favoriteItems");
+        if (savedFavs) favoriteItems = JSON.parse(savedFavs);
+      } catch (e) {
+         console.error("Error loading favorites:", e);
+      }
 
       let customPrices = {};
       try {
@@ -311,6 +576,35 @@
       } catch (e) {
         console.error("Error loading custom prices:", e);
       }
+      
+      let customCreatedItems = [];
+      try {
+        const savedItems = localStorage.getItem("customCreatedItems");
+        if (savedItems) customCreatedItems = JSON.parse(savedItems);
+      } catch (e) {
+        console.error("Error loading custom items:", e);
+      }
+
+      function injectCustomItems() {
+        // Reset databases first to avoid duplication on re-runs
+        for(let prof in originalDataByProfession) {
+             dataByProfession[prof] = [...originalDataByProfession[prof]];
+        }
+        
+        if (!customCreatedItems || customCreatedItems.length === 0) return;
+        
+        customCreatedItems.forEach(item => {
+            if(dataByProfession[item.prof]) {
+                const copy = {...item};
+                copy.isCustom = true; // Adicionado para identificar que este item é custom
+                delete copy.prof; // clean up prop
+                dataByProfession[item.prof].push(copy);
+            }
+        });
+      }
+      
+      // Called once on init mostly, but calculate() uses dataByProfession anyway
+      injectCustomItems();
 
       function setTab(tabName) {
         currentTab = tabName;
@@ -330,6 +624,7 @@
           }
         });
 
+        renderFavorites();
         calculate();
       }
 
@@ -378,12 +673,30 @@
         return `<span class="text-slate-400 text-xs">${value.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} Bz</span>`;
       }
 
-      function createItemCard(item, qty, index) {
+      function getItemId(item) {
+        return item.name + '_' + (item.era || 0) + '_' + (item.min || 0);
+      }
+
+      function toggleFavorite(itemId) {
+        const index = favoriteItems.indexOf(itemId);
+        if (index > -1) {
+          favoriteItems.splice(index, 1);
+        } else {
+          favoriteItems.push(itemId);
+        }
+        localStorage.setItem("favoriteItems", JSON.stringify(favoriteItems));
+
+        renderFavorites();
+        calculate();
+      }
+
+      function createItemCard(item, qty, index, isFavContext = false) {
+        const itemId = getItemId(item);
         const totalMin = applyRounding(item.min * qty);
         const totalMax = applyRounding(item.max * qty);
         const storedPrice =
-          customPrices[item.name] !== undefined
-            ? customPrices[item.name]
+          customPrices[itemId] !== undefined
+            ? customPrices[itemId]
             : item.min;
         const currentTotal = applyRounding(storedPrice * qty);
 
@@ -393,20 +706,42 @@
         }
         percent = Math.min(Math.max(percent, 0), 100);
 
-        const inputId = `custom-input-${index}`;
-        const rangeId = `custom-range-${index}`;
-        const totalId = `custom-total-${index}`;
+        const uid = isFavContext ? `fav-${index}` : index;
+        const inputId = `custom-input-${uid}`;
+        const rangeId = `custom-range-${uid}`;
+        const totalId = `custom-total-${uid}`;
         const safeName = item.name.replace(/'/g, "\\'");
+        const safeItemId = itemId.replace(/'/g, "\\'");
+
+        const isFav = favoriteItems.includes(itemId);
+        const favClass = isFav ? "is-favorite" : "";
+        const favBtnClass = isFav
+          ? "is-favorite"
+          : "text-slate-400 hover:text-amber-500";
 
         const era = item.era !== undefined ? item.era : 0;
         const eraText = era === 0 ? "Sem Era" : `Era ${era}`;
         const badgeClass = `badge-era-${era}`;
+        
+        const customBadge = item.isCustom ? `<span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex items-center gap-1 shrink-0" title="Item Customizado"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>Custom</span>` : '';
+        const deleteBtn = item.isCustom ? `<button onclick="event.stopPropagation(); event.preventDefault(); deleteCustomItem('${safeItemId}', '${item.prof || currentTab}')" class="text-slate-500 hover:text-red-500 transition-colors focus:outline-none shrink-0" title="Deletar Customizado"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>` : '';
 
         return `
-                <div class="glass-card p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-all duration-300 group h-full w-full overflow-hidden">
+                <div class="glass-card p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-all duration-300 group h-full w-full overflow-hidden ${favClass}">
                     <div class="flex justify-between items-start pb-2 gap-2" style="border-bottom: 1px solid var(--color-border)">
-                        <h3 class="text-base font-bold text-primary transition-colors leading-tight line-clamp-2 break-words flex-1" onmouseover="this.style.color='var(--color-text-hover)'" onmouseout="this.style.color=''"> ${item.name}</h3>
-                        <span class="${badgeClass} text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shrink-0 mt-0.5">${eraText}</span>
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <button onclick="toggleFavorite('${safeItemId}')" class="favorite-btn shrink-0 focus:outline-none ${favBtnClass}" title="Favoritar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                </svg>
+                            </button>
+                            <h3 class="text-base font-bold text-primary transition-colors leading-tight line-clamp-2 break-words" onmouseover="this.style.color='var(--color-text-hover)'" onmouseout="this.style.color=''"> ${item.name}</h3>
+                        </div>
+                        <div class="flex items-center justify-end gap-1.5 shrink-0 mt-0.5">
+                            ${deleteBtn}
+                            ${item.isCustom ? customBadge : ''}
+                            ${!item.isCustom ? `<span class="${badgeClass} text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">${eraText}</span>` : ''}
+                        </div>
                     </div>
 
                     <div class="flex flex-col gap-1.5 text-xs w-full">
@@ -447,13 +782,13 @@
                         <div class="flex justify-between items-center mb-1 gap-2">
                             <span class="text-primary text-[10px] uppercase font-bold tracking-wider shrink-0">Personalizado</span>
                             <input type="number" id="${inputId}" min="${item.min}" max="${item.max}" step="0.01" value="${storedPrice}"
-                                   oninput="updateCustomPrice(${index}, '${safeName}', this.value, 'input')"
+                                   oninput="updateCustomPrice('${uid}', '${safeItemId}', this.value, 'input')"
                                    class="w-16 text-[10px] rounded px-1 py-0.5 text-right focus:border-primary outline-none transition-colors shrink-0"
                                    style="background: var(--color-input-bg); border: 1px solid var(--color-input-border); color: var(--color-text)">
                         </div>
 
                         <input type="range" id="${rangeId}" min="${item.min}" max="${item.max}" step="0.01" value="${storedPrice}"
-                               oninput="updateCustomPrice(${index}, '${safeName}', this.value, 'range')"
+                               oninput="updateCustomPrice('${uid}', '${safeItemId}', this.value, 'range')"
                                class="range-slider w-full mb-3 h-1 shrink-0"
                                style="background: linear-gradient(to right, var(--color-primary) ${percent}%, var(--color-bar-bg) ${percent}%)">
 
@@ -471,7 +806,7 @@
             `;
       }
 
-      function updateCustomPrice(index, itemName, value, source) {
+      function updateCustomPrice(index, itemId, value, source) {
         const qty = parseFloat(quantityInput.value) || 0;
         const rangeInput = document.getElementById(`custom-range-${index}`);
         const numberInput = document.getElementById(`custom-input-${index}`);
@@ -486,7 +821,7 @@
         if (val < min) val = min;
 
         if (customPrices) {
-          customPrices[itemName] = val;
+          customPrices[itemId] = val;
           localStorage.setItem("customPrices", JSON.stringify(customPrices));
         }
 
@@ -497,10 +832,24 @@
         if (max > min) percent = ((val - min) / (max - min)) * 100;
         percent = Math.min(Math.max(percent, 0), 100);
 
-        rangeInput.style.background = `linear-gradient(to right, var(--color-primary) ${percent}%, var(--color-bar-bg) ${percent}%)`;
+        const isTrainer = currentTab === "treinador";
+        const primaryColor = "var(--color-primary)";
+        const barBgColor = "var(--color-bar-bg)";
+        rangeInput.style.background = `linear-gradient(to right, ${primaryColor} ${percent}%, ${barBgColor} ${percent}%)`;
 
         const total = applyRounding(val * qty);
-        totalDisplay.innerHTML = `
+
+        let totalHTML = "";
+        if (isTrainer) {
+          totalHTML = `
+                <span class="treinador-label">${Config.TrainerUI.TotalText}</span>
+                <div class="min-w-0 break-words flex flex-col items-end">
+                    <div class="text-[14px] font-bold leading-tight" style="color: var(--color-primary)">${formatMoneyConverted(total)}</div>
+                    <div class="text-[10px] mt-0.5" style="color: rgb(var(--color-primary-rgb) / 0.7)">${Math.floor(total).toLocaleString("pt-BR")} Bz</div>
+                </div>
+            `;
+        } else {
+          totalHTML = `
                 <div class="flex justify-between items-end gap-2">
                     <span class="text-[9px] text-primary font-bold shrink-0">Total</span>
                     <div class="min-w-0 break-words flex-1 flex flex-col items-end">
@@ -509,6 +858,8 @@
                     </div>
                 </div>
             `;
+        }
+        totalDisplay.innerHTML = totalHTML;
       }
 
       function renderGroupedList(items, qty) {
@@ -539,12 +890,38 @@
         resultsContainer.innerHTML = "";
         items.forEach((item, index) => {
           const cardWrapper = document.createElement("div");
-          cardWrapper.innerHTML = createItemCard(item, qty, index);
+          cardWrapper.innerHTML = createItemCard(item, qty, index, false);
           resultsContainer.appendChild(cardWrapper.firstElementChild);
         });
       }
 
+      function renderFavorites() {
+        if (!favoriteItems || favoriteItems.length === 0) {
+          favoritesSection.classList.add("hidden");
+          return;
+        }
+
+        favoritesSection.classList.remove("hidden");
+        const favData = favoriteItems
+          .map((itemId) => {
+            for (let prof in dataByProfession) {
+              const found = dataByProfession[prof].find((i) => getItemId(i) === itemId);
+              if (found) return found;
+            }
+            return null;
+          })
+          .filter((item) => item !== null);
+
+        let qty = parseFloat(quantityInput.value);
+        if (!qty || qty < 0) qty = 0;
+
+        favoritesGrid.innerHTML = favData
+          .map((item, i) => createItemCard(item, qty, i, true))
+          .join("");
+      }
       function calculate() {
+        // Re-inject before calculating to make sure list is populated just in case it grew
+        injectCustomItems();
         const query = searchInput.value.toLowerCase();
         let qty = parseFloat(quantityInput.value);
         if (!qty || qty < 0) qty = 0;
@@ -617,12 +994,177 @@
       }
 
       searchInput.addEventListener("input", calculate);
-      quantityInput.addEventListener("input", calculate);
+      quantityInput.addEventListener("input", () => {
+        calculate();
+        renderFavorites();
+      });
       filterEraSelect.addEventListener("change", calculate);
       sortOrderSelect.addEventListener("change", calculate);
 
       const savedTabSession = localStorage.getItem("lastTab");
       setTab(savedTabSession || "cacador");
+      renderFavorites();
+      
+      // Modal Logic
+      function openModal(id) {
+          document.getElementById(id).classList.remove("hidden");
+      }
+      function closeModal(id) {
+          document.getElementById(id).classList.add("hidden");
+      }
+      
+      function openCustomItemModal() {
+          document.getElementById('modal-item-name').value = '';
+          document.getElementById('modal-item-cat').value = '';
+          document.getElementById('modal-item-min').value = '';
+          document.getElementById('modal-item-max').value = '';
+          document.getElementById('modal-item-era').value = '0';
+          document.getElementById('modal-item-ing').value = '';
+          document.getElementById('modal-item-prof').value = currentTab;
+          
+          openModal('custom-item-modal');
+      }
+
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        const bgColor = type === "success" ? "bg-emerald-600" : "bg-red-500";
+        toast.className = `${bgColor} text-white px-4 py-2 rounded shadow-lg text-sm font-bold animate-[slideIn_0.3s_ease-out]`;
+        toast.innerText = message;
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add("opacity-0", "transition-opacity", "duration-300");
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+      
+      function saveCustomItem() {
+          const prof = document.getElementById('modal-item-prof').value;
+          const cat = document.getElementById('modal-item-cat').value.trim() || 'Customizados';
+          const name = document.getElementById('modal-item-name').value.trim();
+          const min = parseFloat(document.getElementById('modal-item-min').value) || 0;
+          const max = parseFloat(document.getElementById('modal-item-max').value) || 0;
+          const era = parseInt(document.getElementById('modal-item-era').value) || 0;
+          const ingText = document.getElementById('modal-item-ing').value.trim();
+          
+          if(!name) {
+              showToast("O nome do item é obrigatório!", "error");
+              return;
+          }
+          
+          let ingredients = [];
+          if(ingText) {
+              const lines = ingText.split(',').map(s=>s.trim()).filter(Boolean);
+              for(let line of lines) {
+                  const match = line.match(/^(\d+)x\s+(.+)$/i);
+                  if(match) {
+                      ingredients.push({qty: parseInt(match[1]), item: match[2].trim()});
+                  } else {
+                      ingredients.push({qty: 1, item: line});
+                  }
+              }
+          }
+          
+          const newItem = {
+              prof,
+              cat,
+              name,
+              min,
+              max,
+              era,
+              ingredients
+          };
+          
+          customCreatedItems.push(newItem);
+          localStorage.setItem("customCreatedItems", JSON.stringify(customCreatedItems));
+          closeModal('custom-item-modal');
+          showToast(`Item "${name}" criado com sucesso!`);
+          
+          if(currentTab !== prof) {
+              setTab(prof);
+          } else {
+              calculate();
+              renderFavorites();
+          }
+      }
+
+      function deleteCustomItem(itemId, itemProf) {
+          // Remove carefully from our custom tracking mechanism array using the id matches
+          // NOTE: As itemId is based off function getItemId(i), we synthesize it.
+          customCreatedItems = customCreatedItems.filter(i => {
+              return getItemId(i) !== itemId;
+          });
+
+          localStorage.setItem("customCreatedItems", JSON.stringify(customCreatedItems));
+          
+          showToast("Item customizado deletado!");
+          calculate();
+          renderFavorites();
+      }
+
+      function openShareModal() {
+          const payload = {
+              favoriteItems: favoriteItems,
+              customPrices: customPrices,
+              customCreatedItems: customCreatedItems
+          };
+          // Compress JSON into base64 string
+          const stringified = JSON.stringify(payload);
+          const encoded = btoa(unescape(encodeURIComponent(stringified)));
+          
+          document.getElementById('seed-output').value = encoded;
+          document.getElementById('seed-input').value = "";
+          
+          openModal('share-modal');
+      }
+      
+      function copySeed() {
+          const output = document.getElementById('seed-output');
+          output.select();
+          document.execCommand('copy');
+          showToast("Seed copiada para a área de transferência!");
+      }
+      
+      function importSeed() {
+          const input = document.getElementById('seed-input').value.trim();
+          if(!input) {
+              showToast("Cole um código de seed para importar.", "error");
+              return;
+          }
+          
+          try {
+              const decoded = decodeURIComponent(escape(atob(input)));
+              const parsed = JSON.parse(decoded);
+              
+              if(parsed.favoriteItems) {
+                  favoriteItems = parsed.favoriteItems;
+                  localStorage.setItem("favoriteItems", JSON.stringify(favoriteItems));
+              }
+              if(parsed.customPrices) {
+                  customPrices = parsed.customPrices;
+                  localStorage.setItem("customPrices", JSON.stringify(customPrices));
+              }
+              if(parsed.customCreatedItems) {
+                  customCreatedItems = parsed.customCreatedItems;
+                  localStorage.setItem("customCreatedItems", JSON.stringify(customCreatedItems));
+              }
+              
+              closeModal('share-modal');
+              showToast("Dados sincronizados com sucesso!");
+              calculate();
+              renderFavorites();
+          } catch(e) {
+              console.error("Invalid seed format", e);
+              showToast("Código de seed inválido ou corrompido.", "error");
+          }
+      }
+
     </script>
+    <style>
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
   </body>
 </html>

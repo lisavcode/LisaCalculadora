@@ -1,5 +1,16 @@
 const changelogData = [
   {
+    version: "1.2.0",
+    date: "04/03/2026",
+    changes: [
+      "Adicionado funcionalidade de edição de encomendas, permitindo alterar pedidos existentes sem precisar apagá-los.",
+      "Estabilizado o visual do modal de Encomendas para manter o tamanho consistente em diferentes resoluções.",
+      "Centralizado mensagens e textos do sistema de encomendas no arquivo de configuração global.",
+      "Adicionado sistema de favoritar itens.",
+      "Ajustado tabela de treinador, para comportar itens sem preço."
+    ],
+  },
+  {
     version: "1.1.4",
     date: "03/03/2026",
     changes: [

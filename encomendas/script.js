@@ -31,23 +31,67 @@ const NotesManager = {
 
   // --- Modal Logic ---
 
-  openModal() {
+  openModal(orderId = null) {
     // Notifica Hub para ocultar o menu global
     if (window.parent && window.parent !== window) {
       window.parent.dispatchEvent(new CustomEvent("hide-hub-ui"));
     }
 
     const modal = document.getElementById("order-modal");
+    const modalTitle = document.getElementById("modal-title");
+    const orderIdInput = document.getElementById("order-id-input");
+    const form = document.getElementById("order-form");
+    const productList = document.getElementById("product-list");
+
     modal.classList.remove("hidden");
     // Trigger reflow
     void modal.offsetWidth;
     modal.classList.add("modal-open");
 
     // Reset form
-    document.getElementById("order-form").reset();
-    document.getElementById("product-list").innerHTML = "";
-    // Started empty, waiting for Picker add
+    form.reset();
+    productList.innerHTML = "";
     document.getElementById("total-price").innerText = "0";
+
+    if (orderId) {
+      const order = this.orders.find((o) => o.id === orderId);
+      if (order) {
+        modalTitle.innerText = Config.Orders.EditTitle;
+        orderIdInput.value = order.id;
+        form.querySelector('[name="buyer"]').value = order.buyer;
+        form.querySelector('[name="description"]').value =
+          order.description || "";
+
+        // Re-add products
+        order.products.forEach((p) => {
+          // We need the original item object to get min/max for the card
+          // script.js has a getAllProducts() method
+          const allProducts = this.getAllProducts();
+          const originalItem = allProducts.find((item) => item.name === p.name);
+
+          if (originalItem) {
+            this.addItemCard({
+              ...originalItem,
+              savedQty: p.quantity,
+              savedPrice: p.unitPrice,
+            });
+          } else {
+            // Fallback if item no longer exists in profession data
+            this.addItemCard({
+              name: p.name,
+              min: p.unitPrice,
+              max: p.unitPrice,
+              era: 0,
+              savedQty: p.quantity,
+              savedPrice: p.unitPrice,
+            });
+          }
+        });
+      }
+    } else {
+      modalTitle.innerText = Config.Orders.NewTitle;
+      orderIdInput.value = "";
+    }
   },
 
   closeModal() {
@@ -168,20 +212,21 @@ const NotesManager = {
                 <!-- Quantity Row (New for Orders) -->
                  <div class="flex justify-between items-center mb-2">
                     <span class="text-primary text-[10px] uppercase font-bold tracking-wider">Quantidade</span>
-                    <input type="number" min="1" value="1" class="qty-input w-20 text-[11px] font-bold rounded px-1.5 py-1 text-center focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
+                    <input type="number" min="1" value="${item.savedQty || 1}" class="qty-input w-20 text-[11px] font-bold rounded px-1.5 py-1 text-center focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
                            style="background: var(--color-input-bg); border: 1px solid var(--color-input-border); color: var(--color-text)">
                 </div>
 
                 <!-- Custom Price Row -->
                 <div class="flex justify-between items-center mb-1">
                     <span class="text-primary text-[10px] uppercase font-bold tracking-wider">Preço Unit.</span>
-                    <input type="number" min="${item.min}" max="${item.max}" step="0.01" value="${item.min}" class="price-input w-24 text-[10px] rounded px-1.5 py-0.5 text-right focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
+                    <input type="number" min="${item.min}" max="${item.max}" step="0.01" value="${item.savedPrice || item.min}" class="price-input w-24 text-[10px] rounded px-1.5 py-0.5 text-right focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
                            style="background: var(--color-input-bg); border: 1px solid var(--color-input-border); color: var(--color-text)">
                 </div>
 
                 <!-- Slider -->
-                <input type="range" min="${item.min}" max="${item.max}" step="0.01" value="${item.min}" class="range-slider price-slider w-full mb-3 h-1"
+                <input type="range" min="${item.min}" max="${item.max}" step="0.01" value="${item.savedPrice || item.min}" class="range-slider price-slider w-full mb-3 h-1"
                        style="background: linear-gradient(to right, var(--color-primary) 0%, var(--color-bar-bg) 0%)">
+
 
                 <!-- Total Display -->
                 <div class="text-right bg-primary/10 border border-primary/20 p-1.5 rounded-lg total-display-container">
@@ -269,6 +314,7 @@ const NotesManager = {
   saveOrder(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const orderId = formData.get("orderId");
 
     const products = [];
     const cards = document.getElementsByClassName("product-card");
@@ -291,21 +337,37 @@ const NotesManager = {
     }
 
     if (products.length === 0) {
-      alert("Adicione pelo menos um produto!");
+      alert(Config.Orders.AlertEmptyProducts);
       return;
     }
 
-    const newOrder = {
-      id: Date.now().toString(),
-      buyer: formData.get("buyer"),
-      description: formData.get("description"),
-      products: products,
-      totalPrice: totalOrder,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
+    if (orderId) {
+      // Edit existing order
+      const index = this.orders.findIndex((o) => o.id === orderId);
+      if (index !== -1) {
+        this.orders[index] = {
+          ...this.orders[index],
+          buyer: formData.get("buyer"),
+          description: formData.get("description"),
+          products: products,
+          totalPrice: totalOrder,
+          // updatedAt could be added here if desired
+        };
+      }
+    } else {
+      // Create new order
+      const newOrder = {
+        id: Date.now().toString(),
+        buyer: formData.get("buyer"),
+        description: formData.get("description"),
+        products: products,
+        totalPrice: totalOrder,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+      };
+      this.orders.unshift(newOrder); // Add to top
+    }
 
-    this.orders.unshift(newOrder); // Add to top
     this.saveToStorage();
     this.closeModal();
   },
@@ -319,7 +381,7 @@ const NotesManager = {
   },
 
   deleteOrder(id) {
-    if (confirm("Apagar esta encomenda permanentemente?")) {
+    if (confirm(Config.Orders.ConfirmDelete)) {
       this.orders = this.orders.filter((o) => o.id !== id);
       this.saveToStorage();
     }
@@ -368,10 +430,20 @@ const NotesManager = {
         // Actually style.css handles .order-card.delivered vs normal
         card.className = `glass-card p-5 rounded-2xl relative order-card group ${statusClass}`;
 
-        // Delete Btn (Visible on hover)
-        const delBtn = `<button onclick="event.stopPropagation(); NotesManager.deleteOrder('${order.id}')" class="absolute top-4 right-4 text-red-500/50 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Excluir">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-              </button>`;
+        // Action Buttons (Visible on hover)
+        const actionsHtml = `
+            <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <button onclick="event.stopPropagation(); NotesManager.openModal('${order.id}')" class="text-primary/50 hover:text-primary transition-colors" title="Editar">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                </button>
+                <button onclick="event.stopPropagation(); NotesManager.deleteOrder('${order.id}')" class="text-red-500/50 hover:text-red-500 transition-colors" title="Excluir">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>`;
 
         const productsHtml = order.products
           .map(
@@ -388,7 +460,7 @@ const NotesManager = {
         const rawBz = Math.floor(order.totalPrice).toLocaleString("pt-BR");
 
         card.innerHTML = `
-                  ${delBtn}
+                  ${actionsHtml}
                   <div onclick="NotesManager.toggleStatus('${order.id}')" class="cursor-pointer">
                       <div class="flex justify-between items-start mb-2">
                           <h3 class="text-xl font-bold text-white">${order.buyer}</h3>
@@ -464,18 +536,18 @@ const NotesManager = {
         if (Array.isArray(json)) {
           if (
             confirm(
-              `Substituir todas as encomendas atuais por ${json.length} do arquivo?`,
+              Config.Orders.ConfirmRestore.replace("{count}", json.length),
             )
           ) {
             this.orders = json;
             this.saveToStorage();
-            alert("Restaurado com sucesso!");
+            alert(Config.Orders.RestoreSuccess);
           }
         } else {
-          alert("Arquivo inválido.");
+          alert(Config.Orders.FileInvalid);
         }
       } catch (err) {
-        alert("Erro ao ler arquivo JSON.");
+        alert(Config.Orders.FileError);
         console.error(err);
       }
     };

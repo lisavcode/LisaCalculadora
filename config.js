@@ -1,5 +1,5 @@
 const Config = {
-  Debug: false, // Ative para ver logs no console
+  Debug: false,
   Store: {
     Url: "https://discord.com/invite/QBE6kKCBTF",
     ButtonText: "Entrar Em contato",
@@ -9,9 +9,9 @@ const Config = {
   Security: {
     DisableRightClick: true,
     DisableTextSelection: true,
-    DisableShortcuts: true, // Ctrl+C, Ctrl+U, F12, etc.
+    DisableShortcuts: true,
     BlackScreenOnPrint: true,
-    BlackScreenDuration: 500, // Duração da tela preta em ms
+    BlackScreenDuration: 500,
   },
   Messages: {
     PrintWarning: "Captura de tela não permitida!",
@@ -20,8 +20,28 @@ const Config = {
   },
   DRM: {
     Enabled: true,
-    AllowedDomains: ["localhost", "127.0.0.1", "lisavcode.github.io"], // Domínios permitidos. Para uso local (file://), o domínio é vazio.
-    OwnerName: "Lisa", // Nome do proprietário para exibição no console
-    EnableDebuggerLoop: true, // Trava o inspetor de elementos com loops de debugger
+    AllowedDomains: ["localhost", "127.0.0.1", "lisavcode.github.io"],
+    OwnerName: "Lisa",
+    EnableDebuggerLoop: true,
+  },
+  TrainerUI: {
+    UnitaryText: "Custo Unitário",
+    EstimateText: "Custo Estimado",
+    IngredientsText: "Requisitos",
+    CustomText: "Valor Fixo",
+    TotalText: "Total de Moedas",
+    EmptyIngredientsText: "Nenhum requisito",
+    InfoNoPrice: "Informação",
+  },
+  Orders: {
+    NewTitle: "Nova Encomenda",
+    EditTitle: "Editar Encomenda",
+    AlertEmptyProducts: "Adicione pelo menos um produto!",
+    ConfirmDelete: "Apagar esta encomenda permanentemente?",
+    ConfirmRestore:
+      "Substituir todas as encomendas atuais por {count} do arquivo?",
+    FileInvalid: "Arquivo inválido.",
+    FileError: "Erro ao ler arquivo JSON.",
+    RestoreSuccess: "Restaurado com sucesso!",
   },
 };

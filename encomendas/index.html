@@ -176,7 +176,7 @@
         class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300"
       >
         <div
-          class="glass-card w-full max-w-2xl p-6 rounded-2xl relative transform scale-95 transition-transform duration-300"
+          class="glass-card w-full max-w-2xl h-[90vh] max-h-[800px] p-6 rounded-2xl relative transform scale-95 transition-transform duration-300 flex flex-col"
         >
           <button
             onclick="NotesManager.closeModal()"
@@ -199,10 +199,23 @@
             </svg>
           </button>
 
-          <h2 class="text-2xl font-bold text-primary mb-6">Nova Encomenda</h2>
+          <h2
+            id="modal-title"
+            class="text-2xl font-bold text-primary mb-6 flex-shrink-0"
+          >
+            Nova Encomenda
+          </h2>
 
-          <form id="order-form" onsubmit="NotesManager.saveOrder(event)">
-            <div class="grid grid-cols-1 gap-4 mb-6">
+          <form
+            id="order-form"
+            onsubmit="NotesManager.saveOrder(event)"
+            class="flex flex-col flex-grow overflow-hidden"
+          >
+            <input type="hidden" name="orderId" id="order-id-input" value="" />
+
+            <div
+              class="flex-grow overflow-y-auto custom-scrollbar pr-2 mb-6 space-y-6"
+            >
               <div>
                 <label class="block text-sm text-muted mb-1"
                   >Nome do Comprador</label
@@ -260,12 +273,14 @@
                 <textarea
                   name="description"
                   rows="3"
-                  class="w-full bg-black/20 border border-white/20 rounded-lg px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary transition-all duration-200 shadow-inner resize-y"
+                  class="w-full bg-black/20 border border-white/20 rounded-lg px-4 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-primary transition-all duration-200 shadow-inner resize-none"
                 ></textarea>
               </div>
             </div>
 
-            <div class="flex justify-end gap-3">
+            <div
+              class="flex justify-end gap-3 pt-4 border-t border-white/10 flex-shrink-0"
+            >
               <button
                 type="button"
                 onclick="NotesManager.closeModal()"
