@@ -17,10 +17,18 @@ const DefaultThemes = {
     "--color-tab-text": "#94a3b8",
     "--color-card-bg": "#0a131a",
     "--color-estimate-bg": "#1e293b",
-    "--color-estimate-bg": "#1e293b",
     "--color-bar-bg": "#1e293b",
+    "--color-favorite": "#eab308",
+    "--color-custom-btn": "#059669",
+    "--color-sync-btn": "#9333ea",
+    "--color-badge-1": "#22c55e",
+    "--color-badge-2": "#3b82f6",
+    "--color-badge-3": "#a855f7",
+    "--color-badge-4": "#f97316",
+    "--color-badge-5": "#ef4444",
     hue: 0,
     saturation: 0,
+    lightness: 0,
     lockedKeys: [],
   },
   light: {
@@ -41,10 +49,18 @@ const DefaultThemes = {
     "--color-tab-text": "#475569",
     "--color-card-bg": "#ffffff",
     "--color-estimate-bg": "#f1f5f9",
-    "--color-estimate-bg": "#f1f5f9",
     "--color-bar-bg": "#f1f5f9",
+    "--color-favorite": "#d97706",
+    "--color-custom-btn": "#10b981",
+    "--color-sync-btn": "#a855f7",
+    "--color-badge-1": "#22c55e",
+    "--color-badge-2": "#3b82f6",
+    "--color-badge-3": "#a855f7",
+    "--color-badge-4": "#f97316",
+    "--color-badge-5": "#ef4444",
     hue: 0,
     saturation: 0,
+    lightness: 0,
     lockedKeys: [],
   },
   custom: {
@@ -65,10 +81,18 @@ const DefaultThemes = {
     "--color-tab-text": "#888888",
     "--color-card-bg": "#111111",
     "--color-estimate-bg": "#1a0505",
-    "--color-estimate-bg": "#1a0505",
     "--color-bar-bg": "#1a0505",
+    "--color-favorite": "#eab308",
+    "--color-custom-btn": "#059669",
+    "--color-sync-btn": "#9333ea",
+    "--color-badge-1": "#22c55e",
+    "--color-badge-2": "#3b82f6",
+    "--color-badge-3": "#a855f7",
+    "--color-badge-4": "#f97316",
+    "--color-badge-5": "#ef4444",
     hue: 0,
     saturation: 0,
+    lightness: 0,
     lockedKeys: [],
   },
   monochrome: {
@@ -89,10 +113,18 @@ const DefaultThemes = {
     "--color-tab-text": "#888888",
     "--color-card-bg": "#121212",
     "--color-estimate-bg": "#222222",
-    "--color-estimate-bg": "#222222",
     "--color-bar-bg": "#222222",
+    "--color-favorite": "#aaaaaa",
+    "--color-custom-btn": "#444444",
+    "--color-sync-btn": "#666666",
+    "--color-badge-1": "#aaaaaa",
+    "--color-badge-2": "#888888",
+    "--color-badge-3": "#666666",
+    "--color-badge-4": "#444444",
+    "--color-badge-5": "#222222",
     hue: 0,
     saturation: 0,
+    lightness: 0,
     lockedKeys: [],
   },
 };
@@ -368,6 +400,13 @@ const Settings = {
     this.apply();
   },
 
+  updateLightness(val) {
+    val = parseInt(val);
+    this.themes[this.currentTheme].lightness = val;
+    this.save();
+    this.apply();
+  },
+
   toggleLock(key) {
     const theme = this.themes[this.currentTheme];
     if (!theme.lockedKeys) theme.lockedKeys = [];
@@ -381,6 +420,29 @@ const Settings = {
     this.save();
     this.apply();
     this.updateColorInputs(); // Update UI to reflect lock state
+    this.renderColorList(); // Update category lock icons
+  },
+
+  toggleCategoryLock(categoryName, keys) {
+    const theme = this.themes[this.currentTheme];
+    if (!theme.lockedKeys) theme.lockedKeys = [];
+
+    const allLocked = keys.every((k) => theme.lockedKeys.includes(k));
+
+    if (allLocked) {
+      theme.lockedKeys = theme.lockedKeys.filter((k) => !keys.includes(k));
+    } else {
+      keys.forEach((k) => {
+        if (!theme.lockedKeys.includes(k)) {
+          theme.lockedKeys.push(k);
+        }
+      });
+    }
+
+    this.save();
+    this.apply();
+    this.updateColorInputs();
+    this.renderColorList();
   },
 
   updateColorInputs() {
@@ -429,15 +491,24 @@ const Settings = {
     const theme = this.themes[this.currentTheme];
     const hueRotation = parseInt(theme.hue || 0);
     const saturation = parseInt(theme.saturation || 0);
+    const lightness = parseInt(theme.lightness || 0);
 
     for (const [key, value] of Object.entries(theme)) {
-      if (key === "hue" || key === "saturation" || key === "lockedKeys")
+      if (
+        key === "hue" ||
+        key === "saturation" ||
+        key === "lightness" ||
+        key === "lockedKeys"
+      )
         continue;
 
       let finalValue = value;
 
       // Apply Hue & Saturation
-      if ((hueRotation !== 0 || saturation !== 0) && value.startsWith("#")) {
+      if (
+        (hueRotation !== 0 || saturation !== 0 || lightness !== 0) &&
+        value.startsWith("#")
+      ) {
         // Check Lock
         const isLocked = (theme.lockedKeys || []).includes(key);
         if (!isLocked) {
@@ -447,6 +518,8 @@ const Settings = {
           if (hsl.h < 0) hsl.h += 360;
           // Saturation
           hsl.s = Math.max(0, Math.min(100, hsl.s + saturation));
+          // Lightness
+          hsl.l = Math.max(0, Math.min(100, hsl.l + lightness));
 
           finalValue = this.hslToHex(hsl.h, hsl.s, hsl.l);
         }
@@ -472,7 +545,7 @@ const Settings = {
                 --color-surface: #1e293b;
                 --color-coin-gz: #ffd700;
                 --color-coin-sz: #92b5c5;
-                --color-coin-bz": #cd7f32;
+                --color-coin-bz: #cd7f32;
                 --color-border: #333333;
                 --color-text: #f1f5f9;
                 --color-text-muted: #94a3b8;
@@ -484,6 +557,14 @@ const Settings = {
                 --color-card-bg: #1e293b;
                 --color-estimate-bg: #1e293b;
                 --color-bar-bg: #1e293b;
+                --color-favorite: #eab308;
+                --color-custom-btn: #059669;
+                --color-sync-btn: #9333ea;
+                --color-badge-1: #22c55e;
+                --color-badge-2: #3b82f6;
+                --color-badge-3: #a855f7;
+                --color-badge-4: #f97316;
+                --color-badge-5: #ef4444;
             }
             
             #settings-modal {
@@ -648,6 +729,34 @@ const Settings = {
                 opacity: 1;
                 color: var(--color-primary);
             }
+            .category-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                margin-top: 1rem;
+                margin-bottom: 0.5rem;
+                cursor: pointer;
+                font-weight: bold;
+                color: var(--color-primary);
+                font-size: 0.9rem;
+            }
+            .category-header:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            .category-content {
+                display: none;
+                flex-direction: column;
+                gap: 0.5rem;
+                padding-left: 0.5rem;
+                border-left: 2px solid rgba(255, 255, 255, 0.1);
+                margin-left: 0.5rem;
+            }
+            .category-content.open {
+                display: flex;
+            }
         `;
     document.head.appendChild(style);
   },
@@ -735,6 +844,26 @@ const Settings = {
                            <span>    0%</span>
                            <span>+100%</span>
                         </div>
+
+                         <div class="flex items-center justify-between mb-2 mt-4">
+                             <div class="flex items-center">
+                                <span class="mr-2 text-sm">Brilho:</span>
+                                <input type="number" id="light-number" 
+                                    class="w-12 bg-black/20 border border-white/10 rounded text-center text-xs"
+                                    value="${this.themes[this.currentTheme].lightness || 0}"
+                                    onchange="document.getElementById('light-slider').value = this.value; Settings.updateLightness(this.value);">
+                             </div>
+                        </div>
+                        <input type="range" id="light-slider" min="-100" max="100" 
+                               value="${this.themes[this.currentTheme].lightness || 0}" 
+                               class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                               style="background: linear-gradient(to right, #000000, #808080, #ffffff);"
+                               oninput="document.getElementById('light-number').value = this.value; Settings.updateLightness(this.value)">
+                        <div class="flex justify-between text-xs text-muted mt-1">
+                           <span>-100%</span>
+                           <span>    0%</span>
+                           <span>+100%</span>
+                        </div>
                     </div>
                 </div>
 
@@ -759,72 +888,128 @@ const Settings = {
     const list = document.getElementById("color-list");
     list.innerHTML = "";
 
-    const labels = {
-      "--color-primary": "Cor Primária",
-      "--color-bg": "Fundo Principal",
-      "--color-secondary": "Fundo Secundária",
-      "--color-surface": "Fundo Terciario",
-      "--color-text": "Texto Principal",
-      "--color-text-muted": "Texto Secundário",
-      "--color-border": "Bordas",
-      "--color-input-bg": "Fundo Inputs",
-      "--color-input-border": "Borda Inputs",
-      "--color-text-hover": "Texto ao Passar o Mouse",
-      "--color-text-on-primary": "Texto em Fundo Primário",
-      "--color-tab-text": "Texto das Abas (Inativas)",
-      "--color-card-bg": "Fundo do Cartão",
-      "--color-estimate-bg": "Fundo da Estimativa",
-      "--color-bar-bg": "Fundo da Barra",
-      "--color-coin-gz": "Moeda Ouro",
-      "--color-coin-sz": "Moeda Prata",
-      "--color-coin-bz": "Moeda Bronze",
+    const categories = {
+      "MENU E GERAL": {
+        "--color-primary": "Cor Primária",
+        "--color-bg": "Fundo Principal",
+        "--color-secondary": "Fundo Secundário",
+        "--color-surface": "Fundo Terciário",
+        "--color-text": "Texto Principal",
+        "--color-text-muted": "Texto Secundário",
+        "--color-border": "Bordas",
+      },
+      "ELEMENTOS E INPUTS": {
+        "--color-input-bg": "Fundo Inputs",
+        "--color-input-border": "Borda Inputs",
+        "--color-text-hover": "Texto ao Mouse",
+        "--color-text-on-primary": "Texto Fundo Prim.",
+        "--color-tab-text": "Texto Abas",
+        "--color-card-bg": "Fundo do Cartão",
+        "--color-estimate-bg": "Fundo Estimativa",
+        "--color-bar-bg": "Fundo da Barra",
+      },
+      "BOTÕES E EXTRAS": {
+        "--color-favorite": "Cor: Favorito",
+        "--color-custom-btn": "Criar Customizado",
+        "--color-sync-btn": "Sincronizar",
+      },
+      MOEDAS: {
+        "--color-coin-gz": "Moeda Ouro",
+        "--color-coin-sz": "Moeda Prata",
+        "--color-coin-bz": "Moeda Bronze",
+      },
+      "ERAS (BADGES)": {
+        "--color-badge-1": "Era 1 (Comum)",
+        "--color-badge-2": "Era 2 (Incomum)",
+        "--color-badge-3": "Era 3 (Raro)",
+        "--color-badge-4": "Era 4 (Épico)",
+        "--color-badge-5": "Era 5 (Lendário)",
+      },
     };
 
     const currentThemeColors = this.themes[this.currentTheme];
 
-    for (const [key, label] of Object.entries(labels)) {
-      if (
-        key === "hue" ||
-        key === "saturation" ||
-        key === "lockedKeys" ||
-        key === "lockCoins"
-      )
-        continue;
-      const div = document.createElement("div");
-      div.className = "color-item";
+    for (const [catName, keysObj] of Object.entries(categories)) {
+      const keys = Object.keys(keysObj);
+      const allLocked = keys.every((k) =>
+        (currentThemeColors.lockedKeys || []).includes(k),
+      );
 
-      const currentValue = currentThemeColors[key];
-      const isLocked = (currentThemeColors.lockedKeys || []).includes(key);
+      const catDiv = document.createElement("div");
 
-      // Basic hex check
-      const isHex = /^#[0-9A-F]{6}$/i.test(currentValue);
+      const header = document.createElement("div");
+      header.className = "category-header";
 
-      // Added ID to span for direct updates
-      div.innerHTML = `
-                <span class="text-sm font-medium" style="color: var(--color-text)">${label}</span>
-                <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg border border-white/5">
-                    <button id="lock-${key}" onclick="Settings.toggleLock('${key}')" class="lock-btn ${isLocked ? "text-primary" : "text-muted"}" title="${isLocked ? "Destravar" : "Travar"}">
-                        ${this.getLockIcon(isLocked)}
-                    </button>
-                    <input type="text"  
-                           id="text-${key}"
-                           class="w-20 bg-transparent border-none text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-primary rounded" 
-                           style="color: var(--color-text-muted)"
-                           value="${currentValue}"
-                           maxlength="7"
-                           onchange="Settings.updateFromText('${key}', this.value)"
-                           onkeyup="if(event.key === 'Enter') Settings.updateFromText('${key}', this.value)"
-                    >
-                    <div class="w-8 h-8 rounded overflow-hidden relative border border-white/10 cursor-pointer hover:border-primary transition-colors">
-                        <input type="color" 
-                               id="picker-${key}"
-                               class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 m-0 cursor-pointer border-none"
-                               value="${isHex ? currentValue : Settings.rgbToHex(currentValue)}" 
-                               oninput="Settings.updateFromPicker('${key}', this.value)">
-                    </div>
-                </div>
-            `;
-      list.appendChild(div);
+      const escapedKeys = JSON.stringify(keys).replace(/"/g, "'");
+
+      header.innerHTML = `
+        <div class="flex items-center gap-2 flex-grow" onclick="this.parentElement.nextElementSibling.classList.toggle('open'); const icon = this.querySelector('.chevron'); icon.style.transform = icon.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';">
+          <svg class="chevron transition-transform duration-200" style="transform: rotate(0deg)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+          ${catName}
+        </div>
+        <button onclick="Settings.toggleCategoryLock('${catName}', ${escapedKeys}); event.stopPropagation()" class="lock-btn ${allLocked ? "text-primary" : "text-muted"}" title="${allLocked ? "Destravar Categoria" : "Travar Categoria"}">
+          ${this.getLockIcon(allLocked)}
+        </button>
+      `;
+
+      const content = document.createElement("div");
+      content.className = "category-content";
+      // Não adicionamos .open por default, assim começa fechado e fica mais limpo, mas vou abrir o primeiro.
+      if (catName === "MENU E GERAL") content.classList.add("open");
+
+      let hasValidKeys = false;
+
+      for (const [key, label] of Object.entries(keysObj)) {
+        if (
+          key === "hue" ||
+          key === "saturation" ||
+          key === "lightness" ||
+          key === "lockedKeys"
+        )
+          continue;
+        hasValidKeys = true;
+
+        const div = document.createElement("div");
+        div.className = "color-item";
+
+        const currentValue = currentThemeColors[key] || "#ffffff";
+        const isLocked = (currentThemeColors.lockedKeys || []).includes(key);
+        const isHex = /^#[0-9A-F]{6}$/i.test(currentValue);
+
+        div.innerHTML = `
+          <span class="text-sm font-medium" style="color: var(--color-text)">${label}</span>
+          <div class="flex items-center gap-2 bg-black/20 p-1 rounded-lg border border-white/5">
+              <button id="lock-${key}" onclick="Settings.toggleLock('${key}')" class="lock-btn ${isLocked ? "text-primary" : "text-muted"}" title="${isLocked ? "Destravar" : "Travar"}">
+                  ${this.getLockIcon(isLocked)}
+              </button>
+              <input type="text"  
+                     id="text-${key}"
+                     class="w-20 bg-transparent border-none text-xs font-mono text-center focus:outline-none focus:ring-1 focus:ring-primary rounded" 
+                     style="color: var(--color-text-muted)"
+                     value="${currentValue}"
+                     maxlength="7"
+                     onchange="Settings.updateFromText('${key}', this.value)"
+                     onkeyup="if(event.key === 'Enter') Settings.updateFromText('${key}', this.value)"
+              >
+              <div class="w-8 h-8 rounded overflow-hidden relative border border-white/10 cursor-pointer hover:border-primary transition-colors">
+                  <input type="color" 
+                         id="picker-${key}"
+                         class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 m-0 cursor-pointer border-none"
+                         value="${isHex ? currentValue : Settings.rgbToHex(currentValue)}" 
+                         oninput="Settings.updateFromPicker('${key}', this.value)">
+              </div>
+          </div>
+        `;
+        content.appendChild(div);
+      }
+
+      if (hasValidKeys) {
+        catDiv.appendChild(header);
+        catDiv.appendChild(content);
+        list.appendChild(catDiv);
+      }
     }
   },
 
@@ -887,6 +1072,8 @@ const Settings = {
     const hueNumber = document.getElementById("hue-number");
     const satSlider = document.getElementById("sat-slider");
     const satNumber = document.getElementById("sat-number");
+    const lightSlider = document.getElementById("light-slider");
+    const lightNumber = document.getElementById("light-number");
 
     const theme = this.themes[this.currentTheme];
 
@@ -894,6 +1081,8 @@ const Settings = {
     if (hueNumber) hueNumber.value = theme.hue || 0;
     if (satSlider) satSlider.value = theme.saturation || 0;
     if (satNumber) satNumber.value = theme.saturation || 0;
+    if (lightSlider) lightSlider.value = theme.lightness || 0;
+    if (lightNumber) lightNumber.value = theme.lightness || 0;
   },
 
   reset() {

@@ -1,5 +1,17 @@
 const changelogData = [
   {
+    version: "1.3.1",
+    date: "05/03/2026",
+    changes: [
+      "Adicionado painel de customização de cores mais organizado com categorias expansíveis (Geral, Interface, Botões, Moedas e Eras).",
+      "Novo recurso 'Travar/Destravar Categoria': Agora é possível aplicar o bloqueio de matiz (hue) para toda uma categoria de cores clicando no cadeado da mesma.",
+      "Adicionado suporte a personalização de cores para os botões (Criar Customizado, Sincronizar) e ícone de Favoritos.",
+      "Adicionado suporte a personalização de cores individuais para cada Era (Badges).",
+      "Novo controle global de 'Brilho' na área de configuração visual.",
+      "O sistema de cores (Hue, Saturação e Brilho) agora é mais responsivo entre todas as telas.",
+    ],
+  },
+  {
     version: "1.3.0",
     date: "05/03/2026",
     changes: [
