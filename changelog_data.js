@@ -1,5 +1,15 @@
 const changelogData = [
   {
+    version: "1.3.0",
+    date: "05/03/2026",
+    changes: [
+      "Adicionada nova profissão 'Desocupado' na Calculadora.",
+      "Adicionado recurso para recolher e expandir as categorias de itens e sessão de Favoritos, com salvamento automático da sua preferência.",
+      "Ajustado o sistema de Favoritos: agora mostra apenas os favoritos correspondentes à aba de profissão selecionada.",
+      "Ajustes visuais na sessão de Favoritos, removendo efeitos visuais excessivos (brilho neon) para uma aparência mais clean.",
+    ],
+  },
+  {
     version: "1.2.0",
     date: "04/03/2026",
     changes: [
@@ -7,7 +17,7 @@ const changelogData = [
       "Estabilizado o visual do modal de Encomendas para manter o tamanho consistente em diferentes resoluções.",
       "Centralizado mensagens e textos do sistema de encomendas no arquivo de configuração global.",
       "Adicionado sistema de favoritar itens.",
-      "Ajustado tabela de treinador, para comportar itens sem preço."
+      "Ajustado tabela de treinador, para comportar itens sem preço.",
     ],
   },
   {
