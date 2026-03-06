@@ -1,5 +1,12 @@
 const changelogData = [
   {
+    version: "1.3.2",
+    date: "06/03/2026",
+    changes: [
+      "Restaurada a integridade visual da página inicial após ajustes no sistema de temas.",
+    ],
+  },
+  {
     version: "1.3.1",
     date: "05/03/2026",
     changes: [

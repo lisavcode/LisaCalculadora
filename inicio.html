@@ -49,10 +49,13 @@
         border-color: var(--color-primary, #00eeff);
       }
     </style>
+    <script>
       function hexToHSL(H) {
         if (H.length == 5) H = H.substring(0, 4);
         if (H.length == 9) H = H.substring(0, 7);
-        let r = 0, g = 0, b = 0;
+        let r = 0,
+          g = 0,
+          b = 0;
         if (H.length == 4) {
           r = "0x" + H[1] + H[1];
           g = "0x" + H[2] + H[2];
@@ -62,9 +65,15 @@
           g = "0x" + H[3] + H[4];
           b = "0x" + H[5] + H[6];
         }
-        r /= 255; g /= 255; b /= 255;
-        let cmin = Math.min(r, g, b), cmax = Math.max(r, g, b), delta = cmax - cmin;
-        let h = 0, s = 0, l = 0;
+        r /= 255;
+        g /= 255;
+        b /= 255;
+        let cmin = Math.min(r, g, b),
+          cmax = Math.max(r, g, b),
+          delta = cmax - cmin;
+        let h = 0,
+          s = 0,
+          l = 0;
         if (delta == 0) h = 0;
         else if (cmax == r) h = ((g - b) / delta) % 6;
         else if (cmax == g) h = (b - r) / delta + 2;
@@ -79,16 +88,39 @@
       }
 
       function hslToHex(h, s, l) {
-        s /= 100; l /= 100;
+        s /= 100;
+        l /= 100;
         let c = (1 - Math.abs(2 * l - 1)) * s,
-            x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
-            m = l - c / 2, r = 0, g = 0, b = 0;
-        if (0 <= h && h < 60) { r = c; g = x; b = 0; }
-        else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
-        else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
-        else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
-        else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
-        else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+          x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
+          m = l - c / 2,
+          r = 0,
+          g = 0,
+          b = 0;
+        if (0 <= h && h < 60) {
+          r = c;
+          g = x;
+          b = 0;
+        } else if (60 <= h && h < 120) {
+          r = x;
+          g = c;
+          b = 0;
+        } else if (120 <= h && h < 180) {
+          r = 0;
+          g = c;
+          b = x;
+        } else if (180 <= h && h < 240) {
+          r = 0;
+          g = x;
+          b = c;
+        } else if (240 <= h && h < 300) {
+          r = x;
+          g = 0;
+          b = c;
+        } else if (300 <= h && h < 360) {
+          r = c;
+          g = 0;
+          b = x;
+        }
         r = Math.round((r + m) * 255).toString(16);
         g = Math.round((g + m) * 255).toString(16);
         b = Math.round((b + m) * 255).toString(16);
@@ -114,7 +146,12 @@
               for (const [key, value] of Object.entries(theme)) {
                 if (key.startsWith("--color-")) {
                   let finalValue = value;
-                  if ((hueRotation !== 0 || saturation !== 0 || lightness !== 0) && value.startsWith("#")) {
+                  if (
+                    (hueRotation !== 0 ||
+                      saturation !== 0 ||
+                      lightness !== 0) &&
+                    value.startsWith("#")
+                  ) {
                     const isLocked = (theme.lockedKeys || []).includes(key);
                     if (!isLocked) {
                       const hsl = hexToHSL(value);
