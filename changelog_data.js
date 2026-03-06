@@ -1,5 +1,47 @@
 const changelogData = [
   {
+    version: "1.4.1",
+    date: "06/03/2026",
+    changes: [
+      "Correção no Seletor de Produtos (Encomendas): Agora todas as profissões (incluindo Desocupado, Ferreiro e Treinador) estão disponíveis para seleção.",
+      "Sincronização de dados: Garantido que novos itens customizados e profissões recentes carreguem corretamente no sistema de pedidos.",
+    ],
+  },
+  {
+    version: "1.4.0",
+    date: "06/03/2026",
+    changes: [
+      "Refatoração completa do seletor de profissões no mobile: Novo formato Dropdown estilo lista, mais intuitivo e ágil.",
+      "Integração das Configurações no Menu Lateral Global: Acesso unificado tanto em Desktop quanto em Mobile.",
+      "Lançamento do Dock Contextual Inteligente: Atalhos dinâmicos no Desktop que mudam conforme a página (Calculadora/Encomendas).",
+      "Busca Inteligente aprimorada: Filtro de texto agora se aplica automaticamente à sua seção de Favoritos.",
+      "Nova Central de Suporte: Botão 'Entrar em Contato' no Início com modal profissional (Discord/Email).",
+      "Novo Portal de Atualizações: Página exclusiva com visual premium e histórico de melhorias do sistema.",
+      "Polimento de Interface: Otimização de Z-index, sincronização de cores sistêmicas e limpeza de código malformado.",
+    ],
+  },
+  {
+    version: "1.3.4",
+    date: "06/03/2026",
+    changes: [
+      "Criado arquivo oficial de histórico de mudanças (CHANGELOG.md) na raiz do projeto.",
+      "Atualizado README.md com informações da versão mais recente e link para o histórico completo.",
+      "Corrigidos diversos erros de formatação nos documentos Markdown do projeto.",
+    ],
+  },
+  {
+    version: "1.3.3",
+    date: "06/03/2026",
+    changes: [
+      "Menu de categoria no mobile refatorado para um 'Dropdown' estilo lista, agora exibe claramente a seleção atual sem sobrepor tela toda.",
+      "Configurações da Calculadora movidas para o Menu Lateral Global, alinhado com outras opções do sistema.",
+      "Dock Contextual Inteligente! Agora a barra de atalhos no Desktop muda dinamicamente dependendo da sua página atual.",
+      "Melhoria na filtragem de favoritos na Calculadora: A busca por texto agora também filtra seus favoritos ativamente.",
+      "Criado botão 'Entrar em Contato' no Menu Início com informações e redes sociais para facilitar o suporte.",
+      "Página de 'Atualizações' (Changelog) ganha vida própria no menu lateral esquerdo com visual dedicado.",
+    ],
+  },
+  {
     version: "1.3.2",
     date: "06/03/2026",
     changes: [

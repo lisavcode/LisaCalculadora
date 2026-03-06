@@ -23,6 +23,7 @@
     <script src="../professions/cacador.js"></script>
     <script src="../professions/ferreiro.js"></script>
     <script src="../professions/treinador.js"></script>
+    <script src="../professions/desocupado.js"></script>
     <!-- Add other professions as needed -->
 
     <script>
@@ -60,6 +61,13 @@
     </script>
   </head>
   <style type="text/tailwindcss">
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
     body {
       background-color: var(--color-bg);
       background-image:
@@ -69,19 +77,23 @@
       background-attachment: fixed;
     }
   </style>
-  <body class="bg-bg text-text min-h-screen p-6 font-sans">
+  <body class="bg-bg text-text min-h-screen p-6 pb-32 md:pb-6 font-sans">
     <div class="max-w-7xl mx-auto relative">
       <!-- Header -->
-      <header class="flex justify-between items-center mb-10">
+      <header
+        class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 md:mb-10 gap-4 pt-10 md:pt-0"
+      >
         <div>
           <h1
-            class="text-4xl font-bold text-primary uppercase tracking-wider drop-shadow-lg"
+            class="text-3xl md:text-4xl font-bold text-primary uppercase tracking-wider drop-shadow-lg"
           >
             Encomendas
           </h1>
-          <p class="text-muted text-lg font-light">Gerenciamento de Pedidos</p>
+          <p class="text-muted text-base md:text-lg font-light">
+            Gerenciamento de Pedidos
+          </p>
         </div>
-        <div class="flex gap-4">
+        <div class="flex gap-3 flex-wrap">
           <button
             onclick="NotesManager.downloadJSON()"
             class="px-4 py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-sm flex items-center gap-2"
@@ -130,13 +142,12 @@
         </div>
       </header>
 
-      <!-- Search / Filter -->
       <div class="mb-8 flex gap-4">
         <input
           type="text"
           id="search-orders"
           placeholder="Buscar comprador..."
-          class="w-full max-w-md bg-surface border border-white/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-primary shadow-inner transition-all duration-200"
+          class="w-full max-w-md bg-surface border border-white/20 rounded-lg px-4 py-3 min-h-[48px] text-white placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-primary shadow-inner transition-all duration-200"
         />
       </div>
 
@@ -148,27 +159,31 @@
         <!-- Order Cards will be injected here -->
       </div>
 
-      <!-- FAB (Floating Action Button) -->
-      <button
-        onclick="NotesManager.openModal()"
-        class="fixed bottom-8 right-8 w-14 h-14 bg-primary rounded-full flex items-center justify-center text-black hover:rotate-90 hover:scale-110 transition-all duration-300 z-40 outline-none focus:ring-4 focus:ring-primary/50"
-        title="Nova Encomenda"
+      <!-- Mobile/Desktop Bottom Action Dock -->
+      <div
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-sm"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+        <button
+          onclick="NotesManager.openModal()"
+          class="w-full bg-surface/90 backdrop-blur-md border border-primary/30 text-primary rounded-2xl flex items-center justify-center gap-3 py-3 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5),0_0_15px_rgba(0,238,255,0.2)] hover:bg-primary/10 transition-all cursor-pointer font-bold uppercase tracking-wider outline-none focus:ring-2 focus:ring-primary"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Nova Encomenda
+        </button>
+      </div>
 
       <!-- Order Modal -->
       <div
@@ -242,7 +257,7 @@
                   type="button"
                   id="open-picker-btn"
                   onclick="ItemPicker.open()"
-                  class="w-full py-3 rounded-xl border border-dashed border-primary/50 text-primary font-bold hover:bg-primary/10 hover:border-solid transition-all duration-300 flex justify-center items-center gap-2 group uppercase tracking-widest text-sm relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#0a131a]"
+                  class="w-full py-3 min-h-[48px] rounded-xl border border-dashed border-primary/50 text-primary font-bold hover:bg-primary/10 hover:border-solid transition-all duration-300 flex justify-center items-center gap-2 group uppercase tracking-widest text-sm relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#0a131a]"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -284,13 +299,13 @@
               <button
                 type="button"
                 onclick="NotesManager.closeModal()"
-                class="px-6 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
+                class="px-6 py-3 min-h-[48px] rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                class="px-8 py-2 bg-primary text-black font-bold rounded-lg transition-all"
+                class="px-8 py-3 min-h-[48px] bg-primary text-black font-bold rounded-lg transition-all"
                 style="color: var(--color-text-on-primary, black)"
               >
                 Salvar
@@ -381,10 +396,12 @@
             </div>
 
             <!-- Filters -->
-            <div class="flex gap-2 min-w-[300px]">
+            <div
+              class="flex flex-col sm:flex-row gap-2 w-full md:min-w-[300px] md:w-auto"
+            >
               <select
                 id="picker-era-filter"
-                class="flex-grow bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary cursor-pointer appearance-none"
+                class="flex-grow bg-black/30 border border-white/10 rounded-xl px-4 py-3 min-h-[48px] text-white focus:outline-none focus:border-primary cursor-pointer appearance-none"
               >
                 <option value="all">Todas as Eras</option>
                 <option value="1">Era 1</option>
@@ -397,7 +414,7 @@
               </select>
               <select
                 id="picker-sort"
-                class="flex-grow bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary cursor-pointer appearance-none"
+                class="flex-grow bg-black/30 border border-white/10 rounded-xl px-4 py-3 min-h-[48px] text-white focus:outline-none focus:border-primary cursor-pointer appearance-none"
               >
                 <option value="name-asc">Nome: A-Z</option>
                 <option value="price-asc">Preço: Menor</option>
@@ -408,48 +425,54 @@
           </div>
 
           <!-- Profession Tabs -->
-          <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+          <div class="flex flex-wrap gap-2 pb-2 px-1 w-full justify-center">
             <button
               data-tab="cacador"
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-primary bg-primary text-black font-bold text-sm transition-all hover:scale-105"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-primary bg-primary text-black font-bold text-sm transition-all hover:scale-105"
             >
               Caçador
             </button>
             <button
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
               data-tab="alquimista"
             >
               Alquimista
             </button>
             <button
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
               data-tab="minerador"
             >
               Minerador
             </button>
             <button
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
               data-tab="artesao"
             >
               Artesão
             </button>
             <button
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
               data-tab="alfaiate"
             >
               Alfaiate
             </button>
             <button
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
               data-tab="ferreiro"
             >
               Ferreiro
             </button>
             <button
-              class="picker-tab-btn px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
               data-tab="treinador"
             >
               Treinador
+            </button>
+            <button
+              class="picker-tab-btn shrink-0 snap-start min-h-[44px] flex items-center justify-center px-4 py-1.5 rounded-full border border-slate-600 text-slate-400 font-bold text-sm transition-all hover:border-primary hover:text-primary"
+              data-tab="desocupado"
+            >
+              Desocupado
             </button>
           </div>
         </div>

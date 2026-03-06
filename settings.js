@@ -686,24 +686,7 @@ const Settings = {
             }
 
             .settings-trigger {
-                position: fixed;
-                top: 2rem;
-                right: 2rem;
-                background: transparent;
-                border: 1px solid var(--color-primary);
-                color: var(--color-primary);
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                box-shadow: 0 0 5px rgb(var(--color-primary-rgb) / 0.3);
-                z-index: 999;
-                font-size: 1.2rem;
-                transition: all 0.2s;
-                opacity: 0.7;
+                display: none !important;
             }
 
             .settings-trigger:hover {

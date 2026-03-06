@@ -197,11 +197,11 @@ const NotesManager = {
             </div>
 
             <!-- Info Section -->
-            <div class="flex flex-col gap-1.5 text-xs">
-                <div class="flex justify-between items-center">
-                    <span class="text-[10px] font-semibold uppercase" style="color: var(--color-text-muted)">Unitário</span>
-                    <div class="text-right text-[11px]">
-                        ${this.formatMoneyConverted(item.min)} <span class="text-[10px]" style="color: var(--color-text-muted)">-</span> ${this.formatMoneyConverted(item.max)}
+            <div class="flex flex-col gap-1.5 text-xs w-full">
+                <div class="flex justify-between items-start gap-2">
+                    <span class="text-xs font-semibold uppercase mt-0.5" style="color: var(--color-text-muted)">Unitário</span>
+                    <div class="text-right text-[11px] md:text-sm break-words flex-1 leading-tight">
+                        ${this.formatMoneyConverted(item.min)} <span class="text-xs" style="color: var(--color-text-muted)">-</span><br class="md:hidden"> ${this.formatMoneyConverted(item.max)}
                     </div>
                 </div>
             </div>
@@ -211,15 +211,15 @@ const NotesManager = {
                 
                 <!-- Quantity Row (New for Orders) -->
                  <div class="flex justify-between items-center mb-2">
-                    <span class="text-primary text-[10px] uppercase font-bold tracking-wider">Quantidade</span>
-                    <input type="number" min="1" value="${item.savedQty || 1}" class="qty-input w-20 text-[11px] font-bold rounded px-1.5 py-1 text-center focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
+                    <span class="text-primary text-xs uppercase font-bold tracking-wider">Quantidade</span>
+                    <input type="number" min="1" value="${item.savedQty || 1}" class="qty-input w-20 text-base md:text-sm font-bold rounded px-1.5 py-1 text-center focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
                            style="background: var(--color-input-bg); border: 1px solid var(--color-input-border); color: var(--color-text)">
                 </div>
 
                 <!-- Custom Price Row -->
                 <div class="flex justify-between items-center mb-1">
-                    <span class="text-primary text-[10px] uppercase font-bold tracking-wider">Preço Unit.</span>
-                    <input type="number" min="${item.min}" max="${item.max}" step="0.01" value="${item.savedPrice || item.min}" class="price-input w-24 text-[10px] rounded px-1.5 py-0.5 text-right focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
+                    <span class="text-primary text-xs uppercase font-bold tracking-wider">Pessoal</span>
+                    <input type="number" min="${item.min}" max="${item.max}" step="0.01" value="${item.savedPrice || item.min}" class="price-input w-24 text-base md:text-sm rounded px-1.5 py-0.5 text-right focus:border-transparent focus:ring-2 focus:ring-primary outline-none transition-all shadow-inner"
                            style="background: var(--color-input-bg); border: 1px solid var(--color-input-border); color: var(--color-text)">
                 </div>
 
@@ -480,8 +480,8 @@ const NotesManager = {
                           </div>
                           
                           <div class="flex flex-col items-end">
-                              <div class="text-sm font-bold text-primary leading-none text-right">${formattedPrice}</div>
-                              <div class="text-[10px] text-muted mt-1 leading-none font-mono opacity-70">${rawBz} Bz</div>
+                              <div class="text-sm md:text-base font-bold text-primary leading-none text-right">${formattedPrice}</div>
+                              <div class="text-xs text-muted mt-1 leading-none font-mono opacity-70">${rawBz} Bz</div>
                           </div>
                       </div>
                   </div>
@@ -853,7 +853,7 @@ const ItemPicker = {
             >
                 <div>
                     <div class="flex justify-between items-start mb-2">
-                        <span class="font-bold text-sm text-primary group-hover:text-white transition-colors line-clamp-2 leading-tight">${
+                        <span class="font-bold text-sm md:text-base text-primary group-hover:text-white transition-colors line-clamp-2 leading-tight">${
                           item.name
                         }</span>
                         ${

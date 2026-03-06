@@ -31,6 +31,7 @@
         background-color: var(--color-bg, #000);
         color: var(--color-text, white);
         font-family: "Outfit", sans-serif;
+        height: 100dvh;
       }
 
       .app-view {
@@ -45,7 +46,9 @@
         z-index: 10;
         transition:
           transform 0.6s cubic-bezier(0.7, 0, 0.3, 1),
-          opacity 0.4s ease;
+          opacity 0.4s ease,
+          left 0.3s ease,
+          width 0.3s ease;
       }
       .app-view.active {
         opacity: 1;
@@ -94,44 +97,97 @@
           opacity: 0;
         }
       }
+      .glass-card {
+        background: rgb(var(--color-surface-rgb) / 0.85);
+        border: 1px solid rgb(var(--color-primary-rgb) / 0.1);
+        backdrop-filter: blur(12px);
+      }
 
-      /* Minimalist Navbar */
+      /* Unified Sidebar CSS */
+      .app-view {
+        width: calc(100vw - 250px);
+        left: 250px;
+      }
+      body.sidebar-collapsed .app-view {
+        width: calc(100vw - 80px);
+        left: 80px;
+      }
+
       .navbar {
         position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgb(
-          var(--color-surface-rgb) / 0.85
-        ); /* Aumentado a opacidade já que o blur saiu */
-        border: 1px solid rgb(var(--color-primary-rgb) / 0.1);
-        border-radius: 20px;
-        padding: 6px;
+        bottom: 0;
+        left: 0;
+        top: 0;
+        width: 250px;
+        height: 100vh;
         display: flex;
-        gap: 4px;
-        z-index: 50; /* Baixado para permitir que modais fiquem por cima se necessário */
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 24px 16px;
+        background: rgb(var(--color-surface-rgb) / 0.85);
+        border-right: 1px solid rgb(var(--color-primary-rgb) / 0.1);
+        z-index: 50;
+        box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(12px);
+        gap: 12px;
+        transition:
+          width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      body.sidebar-collapsed .navbar {
+        width: 80px;
+        padding: 24px 8px;
       }
       .navbar.hidden-ui {
-        opacity: 0;
-        pointer-events: none;
-        transform: translateX(-50%) translateY(100px);
+        transform: translateX(-100%);
       }
-      .navbar:hover {
-        background: rgb(var(--color-surface-rgb) / 0.8);
-        border-color: rgb(var(--color-primary-rgb) / 0.3);
+
+      .brand-sidebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        width: 100%;
+        overflow: hidden;
+      }
+      .brand-sidebar .brand-text {
+        transition: opacity 0.2s;
+        white-space: nowrap;
+      }
+      body.sidebar-collapsed .brand-sidebar .brand-text {
+        opacity: 0;
+        width: 0;
+        display: none;
+      }
+      body.sidebar-collapsed .brand-sidebar {
+        justify-content: center;
       }
 
       .nav-item {
         color: var(--color-text-muted, rgba(255, 255, 255, 0.4));
-        padding: 10px 20px;
-        border-radius: 14px;
-        font-weight: 500;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.05em;
         cursor: pointer;
         transition: all 0.3s ease;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+        min-height: 54px;
+        flex: none;
+        overflow: hidden;
+        white-space: nowrap;
+        -webkit-tap-highlight-color: transparent;
       }
       .nav-item:hover {
         color: var(--color-text);
@@ -140,6 +196,44 @@
       .nav-item.active {
         color: var(--color-primary);
         background: rgb(var(--color-primary-rgb) / 0.15);
+      }
+
+      body.sidebar-collapsed .nav-item {
+        justify-content: center;
+        padding: 12px;
+      }
+      body.sidebar-collapsed .nav-item span {
+        display: none;
+      }
+      .nav-item svg {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+
+      /* Mobile adjustments for Sidebar */
+      @media (max-width: 767px) {
+        .app-view {
+          /* On mobile, app view stays static and full width, sidebar overlays on top */
+          width: calc(100vw - 64px) !important;
+          left: 64px !important;
+        }
+
+        .navbar {
+          /* Expand width to something reasonable on a small 375px display */
+          width: 220px;
+        }
+        body.sidebar-collapsed .navbar {
+          width: 64px;
+        }
+
+        .brand-sidebar {
+          font-size: 1.25rem;
+        }
+
+        .nav-item {
+          font-size: 0.8rem;
+        }
       }
     </style>
   </head>
@@ -155,35 +249,291 @@
       src="encomendas/index.html"
       class="app-view"
     ></iframe>
+    <iframe
+      id="view-atualizacoes"
+      src="atualizacoes.html"
+      class="app-view"
+    ></iframe>
 
     <div id="tv-line" class="tv-line"></div>
 
+    <!-- Desktop Tools Dock -->
+    <div
+      id="desktop-tools-dock"
+      class="fixed right-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-4 z-40 transition-transform duration-300"
+    >
+      <!-- Inicio Tools (Empty for now) -->
+      <div id="dock-inicio" class="flex-col gap-4 rounded-full flex">
+      </div>
+
+      <!-- Calculadora Tools -->
+      <div id="dock-calculadora" class="flex flex-col gap-4 hidden">
+        <!-- New Product -->
+        <button
+          class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-all shadow-[0_0_10px_rgba(0,238,255,0.2)] hover:shadow-[0_0_15px_rgba(0,238,255,0.5)] cursor-pointer"
+          title="Criar Produto..."
+          onclick="document.getElementById('view-calculadora').contentWindow.openCustomItemModal()"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+        <!-- Expand Categories -->
+        <button
+          class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-all shadow-[0_0_10px_rgba(0,238,255,0.2)] hover:shadow-[0_0_15px_rgba(0,238,255,0.5)] cursor-pointer"
+          title="Expandir Categorias"
+          onclick="(() => {
+            const win = document.getElementById('view-calculadora').contentWindow;
+            win.document.querySelectorAll('.prof-header').forEach(h => {
+              if (h.nextElementSibling.classList.contains('hidden')) h.click();
+            });
+          })();"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7M19 5l-7 7-7-7" />
+          </svg>
+        </button>
+        <!-- Retract Categories -->
+        <button
+          class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-all shadow-[0_0_10px_rgba(0,238,255,0.2)] hover:shadow-[0_0_15px_rgba(0,238,255,0.5)] cursor-pointer"
+          title="Retrair Categorias"
+          onclick="(() => {
+            const win = document.getElementById('view-calculadora').contentWindow;
+            win.document.querySelectorAll('.prof-header').forEach(h => {
+              if (!h.nextElementSibling.classList.contains('hidden')) h.click();
+            });
+          })();"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l7-7 7 7M5 19l7-7 7 7" />
+          </svg>
+        </button>
+        <!-- Clear Search -->
+        <button
+          class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-red-400 hover:scale-110 transition-all border border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] cursor-pointer"
+          title="Resetar Busca"
+          onclick="(() => {
+            const win = document.getElementById('view-calculadora').contentWindow;
+            const input = win.document.getElementById('search-item');
+            if (input) {
+              input.value = '';
+              win.filterItems('');
+            }
+          })();"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Encomendas Tools -->
+      <div id="dock-encomendas" class="flex flex-col gap-4 hidden">
+        <button
+          class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-all shadow-[0_0_10px_rgba(0,238,255,0.2)] hover:shadow-[0_0_15px_rgba(0,238,255,0.5)] cursor-pointer"
+          title="Nova Encomenda"
+          onclick="(() => {
+            const win = document.getElementById('view-encomendas').contentWindow;
+            if (win && win.NotesManager) win.NotesManager.openModal();
+          })();"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      </div>
+      </div>
+    </div>
+      <button
+        class="w-12 h-12 rounded-full glass-card flex items-center justify-center text-primary hover:scale-110 transition-all shadow-[0_0_10px_rgba(0,238,255,0.2)] hover:shadow-[0_0_15px_rgba(0,238,255,0.5)] cursor-pointer"
+        title="Configurações"
+        onclick="
+          ['view-inicio', 'view-calculadora', 'view-encomendas', 'view-atualizacoes'].forEach((id) => {
+            const frame = document.getElementById(id);
+            if (frame && frame.classList.contains('active')) {
+              const btn = frame.contentDocument.querySelector('.settings-trigger');
+              if (btn) btn.click();
+            }
+          });
+        "
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.581-.495.644-.869l.214-1.281z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </button>
+    </div>
+
     <nav class="navbar" id="main-navbar">
+      <div class="brand-sidebar">
+        <div class="brand-text">
+          Lisa<br /><span style="color: var(--color-text)">Calc</span>
+        </div>
+        <button
+          id="sidebar-toggle"
+          class="text-primary hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
+          onclick="toggleSidebar()"
+          title="Recolher Menu"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      </div>
       <button
         class="nav-item active"
         data-target="inicio"
         onclick="switchView('inicio')"
       >
-        Início
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 md:h-5 md:w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          />
+        </svg>
+        <span>Início</span>
       </button>
       <button
         class="nav-item"
         data-target="calculadora"
         onclick="switchView('calculadora')"
       >
-        Calculadora
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 md:h-5 md:w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+          />
+        </svg>
+        <span>Calculadora</span>
       </button>
       <button
         class="nav-item"
         data-target="encomendas"
         onclick="switchView('encomendas')"
       >
-        Encomendas
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 md:h-5 md:w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+        <span>Encomendas</span>
+      </button>
+
+      <button
+        class="nav-item relative"
+        data-target="atualizacoes"
+        onclick="switchView('atualizacoes')"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span>Atualizações</span>
+      </button>
+
+      <button
+        class="nav-item mt-auto"
+        onclick="
+          ['view-inicio', 'view-calculadora', 'view-encomendas'].forEach((id) => {
+            const frame = document.getElementById(id);
+            if (frame && frame.classList.contains('active')) {
+              const btn = frame.contentDocument.querySelector('.settings-trigger');
+              if (btn) btn.click();
+            }
+          });
+        "
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="h-6 w-6 md:h-5 md:w-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.581-.495.644-.869l.214-1.281z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+        <span>Configurações</span>
       </button>
     </nav>
 
     <script>
       let isAnimating = false;
+
+      // --- Sidebar Toggle ---
+      function toggleSidebar() {
+        document.body.classList.toggle("sidebar-collapsed");
+        const isCollapsed =
+          document.body.classList.contains("sidebar-collapsed");
+        localStorage.setItem("sidebar_collapsed", isCollapsed);
+      }
+
+      (function restoreSidebarState() {
+        const isCollapsed =
+          localStorage.getItem("sidebar_collapsed") === "true";
+        if (isCollapsed) {
+          document.body.classList.add("sidebar-collapsed");
+        }
+      })();
 
       // --- Controle de Visibilidade UI ---
       function setUIVisibility(visible) {
@@ -368,6 +718,21 @@
           btn.classList.toggle("active", btn.dataset.target === targetId);
         });
 
+        // Switch Dock Context
+        const docks = ['inicio', 'calculadora', 'encomendas'];
+        docks.forEach(dock => {
+          const el = document.getElementById(`dock-${dock}`);
+          if (el) {
+            if (dock === targetId) {
+              el.classList.remove("hidden");
+              el.classList.add("flex");
+            } else {
+              el.classList.add("hidden");
+              el.classList.remove("flex");
+            }
+          }
+        });
+
         // Save last view preference
         localStorage.setItem("icarus_last_view", targetId);
 
@@ -409,6 +774,21 @@
             // Update nav buttons
             document.querySelectorAll(".nav-item").forEach((btn) => {
               btn.classList.toggle("active", btn.dataset.target === lastView);
+            });
+
+            // Restore Dock Context
+            const docks = ['inicio', 'calculadora', 'encomendas'];
+            docks.forEach(dock => {
+              const el = document.getElementById(`dock-${dock}`);
+              if (el) {
+                if (dock === lastView) {
+                  el.classList.remove("hidden");
+                  el.classList.add("flex");
+                } else {
+                  el.classList.add("hidden");
+                  el.classList.remove("flex");
+                }
+              }
             });
           }
         }
