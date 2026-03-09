@@ -1,5 +1,12 @@
 const changelogData = [
   {
+    version: "1.5.2",
+    date: "09/03/2026",
+    changes: [
+      "Adicionado botão de config para tavernas.",
+    ],
+  },
+  {
     version: "1.5.0",
     date: "09/03/2026",
     changes: [
