@@ -608,7 +608,7 @@
       <!-- Modals and Toasts (Hidden by default) -->
       <div
         id="toast-container"
-        class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2"
+        class="fixed top-4 right-4 z-[60] flex flex-col gap-2"
       ></div>
 
       <!-- Add Custom Item Modal -->
@@ -856,6 +856,295 @@
       </div>
     </div>
 
+    <!-- Modal Editar Card -->
+    <div
+      id="edit-card-modal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="glass-card p-6 rounded-xl w-full max-w-md border-primary/50 shadow-2xl"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-primary flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              />
+            </svg>
+            Editar Item
+          </h2>
+          <p
+            id="ecm-item-name"
+            class="text-xs text-slate-400 truncate max-w-[150px]"
+          ></p>
+        </div>
+
+        <!-- Abas (apenas para itens normais) -->
+        <div
+          id="ecm-normal-tabs"
+          class="flex gap-2 mb-4 p-1 rounded-lg"
+          style="background: var(--color-input-bg)"
+        >
+          <button
+            id="ecm-tab-promocao"
+            onclick="switchEditTab('promocao')"
+            class="flex-1 py-2 rounded-md text-sm font-bold transition-all bg-primary text-white"
+          >
+            Promoção
+          </button>
+          <button
+            id="ecm-tab-base"
+            onclick="switchEditTab('base')"
+            class="flex-1 py-2 rounded-md text-sm font-bold transition-all text-slate-400"
+          >
+            Preço Base
+          </button>
+        </div>
+
+        <!-- Painel: Promoção (itens normais) -->
+        <div id="ecm-normal-body">
+          <div id="ecm-panel-promocao" class="flex flex-col gap-3">
+            <p class="text-xs text-slate-400">
+              Define "Meu Preço" temporário. Pode ser abaixo do mínimo oficial.
+            </p>
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+                >Preço de Promoção (Bz)</label
+              >
+              <input
+                type="number"
+                id="ecm-promo-input"
+                step="0.01"
+                min="0"
+                class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none transition-colors"
+                style="
+                  background: var(--color-input-bg);
+                  border: 1px solid var(--color-input-border);
+                  color: var(--color-text);
+                "
+              />
+            </div>
+          </div>
+
+          <!-- Painel: Preço Base (itens normais) -->
+          <div id="ecm-panel-base" class="flex flex-col gap-3 hidden">
+            <p class="text-xs text-slate-400">
+              Altera os limites mín/máx localmente. O slider usará os novos
+              valores.
+            </p>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label
+                  class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+                  >Mínimo (Bz)</label
+                >
+                <input
+                  type="number"
+                  id="ecm-min-input"
+                  step="0.01"
+                  min="0"
+                  class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+                  style="
+                    background: var(--color-input-bg);
+                    border: 1px solid var(--color-input-border);
+                    color: var(--color-text);
+                  "
+                />
+              </div>
+              <div class="flex-1">
+                <label
+                  class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+                  >Máximo (Bz)</label
+                >
+                <input
+                  type="number"
+                  id="ecm-max-input"
+                  step="0.01"
+                  min="0"
+                  class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+                  style="
+                    background: var(--color-input-bg);
+                    border: 1px solid var(--color-input-border);
+                    color: var(--color-text);
+                  "
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel: Edição completa (itens customizados) -->
+        <div id="ecm-custom-body" class="flex flex-col gap-3 hidden">
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+              >Nome</label
+            >
+            <input
+              type="text"
+              id="ecm-custom-name"
+              class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+              style="
+                background: var(--color-input-bg);
+                border: 1px solid var(--color-input-border);
+                color: var(--color-text);
+              "
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+              >Categoria</label
+            >
+            <input
+              type="text"
+              id="ecm-custom-cat"
+              class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+              style="
+                background: var(--color-input-bg);
+                border: 1px solid var(--color-input-border);
+                color: var(--color-text);
+              "
+            />
+          </div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label
+                class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+                >Mínimo (Bz)</label
+              >
+              <input
+                type="number"
+                id="ecm-custom-min"
+                step="0.01"
+                min="0"
+                class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+                style="
+                  background: var(--color-input-bg);
+                  border: 1px solid var(--color-input-border);
+                  color: var(--color-text);
+                "
+              />
+            </div>
+            <div class="flex-1">
+              <label
+                class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+                >Máximo (Bz)</label
+              >
+              <input
+                type="number"
+                id="ecm-custom-max"
+                step="0.01"
+                min="0"
+                class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+                style="
+                  background: var(--color-input-bg);
+                  border: 1px solid var(--color-input-border);
+                  color: var(--color-text);
+                "
+              />
+            </div>
+            <div class="w-16">
+              <label
+                class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+                >Era</label
+              >
+              <input
+                type="number"
+                id="ecm-custom-era"
+                min="0"
+                class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none"
+                style="
+                  background: var(--color-input-bg);
+                  border: 1px solid var(--color-input-border);
+                  color: var(--color-text);
+                "
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"
+              >Ingredientes (Opcional)</label
+            >
+            <textarea
+              id="ecm-custom-ing"
+              rows="2"
+              placeholder="Ex: 1x Tecido, 2x Fio"
+              class="w-full rounded px-3 py-2 text-sm focus:border-primary outline-none resize-none"
+              style="
+                background: var(--color-input-bg);
+                border: 1px solid var(--color-input-border);
+                color: var(--color-text);
+              "
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-between gap-3 mt-5">
+          <button
+            onclick="resetEditCard()"
+            class="px-4 py-2 rounded font-bold text-sm text-slate-400 hover:text-orange-400 transition-colors border border-slate-600 hover:border-orange-400"
+          >
+            Resetar
+          </button>
+          <div class="flex gap-2">
+            <button
+              onclick="closeEditCardModal()"
+              class="px-5 py-2 min-h-[40px] rounded font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onclick="saveEditCard()"
+              class="px-5 py-2 min-h-[40px] rounded font-bold text-sm bg-primary hover:bg-emerald-500 text-white transition-colors"
+            >
+              Salvar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Histórico de Preço -->
+
+    <div
+      id="price-history-modal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="glass-card p-6 rounded-xl w-full max-w-sm border-primary/50 shadow-2xl"
+      >
+        <h2 class="text-xl font-bold text-primary mb-1">Histórico de Preço</h2>
+        <p class="text-xs text-slate-400 mb-4" id="phm-item-name"></p>
+        <div id="phm-body" class="flex flex-col gap-3 text-sm mb-6"></div>
+        <div class="flex gap-3 justify-end">
+          <button
+            onclick="closePriceHistoryModal()"
+            class="px-4 py-2 rounded font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+          >
+            Fechar
+          </button>
+          <button
+            id="phm-reset-btn"
+            class="px-4 py-2 rounded font-bold text-sm bg-orange-500 hover:bg-orange-400 text-white transition-colors"
+          >
+            Resetar para Atual
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script src="../config.js"></script>
     <script src="../settings.js"></script>
@@ -892,6 +1181,28 @@
       for (let prof in dataByProfession) {
         originalDataByProfession[prof] = [...dataByProfession[prof]];
       }
+
+      function checkPriceUpdates() {
+        if (typeof priceHistory === "undefined") return;
+        for (let prof in dataByProfession) {
+          dataByProfession[prof].forEach((item) => {
+            const itemId =
+              item.name + "_" + (item.era || 0) + "_" + (item.min || 0);
+            const ph = priceHistory[itemId];
+            if (ph && ph.customizado !== undefined && ph.atual !== undefined) {
+              if (ph.atual !== item.min) {
+                priceHistory[itemId] = {
+                  antigo: ph.atual,
+                  atual: item.min,
+                  customizado: ph.customizado,
+                  hasUpdate: true,
+                };
+              }
+            }
+          });
+        }
+        localStorage.setItem("priceHistory", JSON.stringify(priceHistory));
+      }
     </script>
 
     <script>
@@ -920,6 +1231,23 @@
       } catch (e) {
         console.error("Error loading custom prices:", e);
       }
+
+      let customItemOverrides = {};
+      try {
+        const savedOv = localStorage.getItem("customItemOverrides");
+        if (savedOv) customItemOverrides = JSON.parse(savedOv);
+      } catch (e) {
+        console.error("Error loading item overrides:", e);
+      }
+
+      let priceHistory = {};
+      try {
+        const savedPH = localStorage.getItem("priceHistory");
+        if (savedPH) priceHistory = JSON.parse(savedPH);
+      } catch (e) {
+        console.error("Error loading priceHistory:", e);
+      }
+      checkPriceUpdates();
 
       let collapsedCategories = {};
       try {
@@ -1116,7 +1444,19 @@
         calculate();
       }
 
+      function getEffectiveItem(item) {
+        const itemId = getItemId(item);
+        const ov = customItemOverrides[itemId];
+        if (!ov) return item;
+        return {
+          ...item,
+          min: ov.min !== undefined ? ov.min : item.min,
+          max: ov.max !== undefined ? ov.max : item.max,
+        };
+      }
+
       function createItemCard(item, qty, index, isFavContext = false) {
+        item = getEffectiveItem(item);
         const itemId = getItemId(item);
         const totalMin = applyRounding(item.min * qty);
         const totalMax = applyRounding(item.max * qty);
@@ -1154,6 +1494,11 @@
           ? `<button onclick="event.stopPropagation(); event.preventDefault(); deleteCustomItem('${safeItemId}', '${item.prof || currentTab}')" class="text-slate-500 hover:text-red-500 transition-colors focus:outline-none shrink-0" title="Deletar Customizado"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>`
           : "";
 
+        const editBtn = `<button onclick="event.stopPropagation(); event.preventDefault(); openEditCardModal('${safeItemId}', ${item.min}, ${item.max}, ${!!item.isCustom})" class="text-slate-400 hover:text-primary transition-colors focus:outline-none shrink-0" title="Editar item"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>`;
+
+        const ph = priceHistory[itemId];
+        const hasPriceUpdate = ph && ph.hasUpdate === true;
+
         return `
                 <div class="glass-card p-3 rounded-lg flex flex-col gap-2 hover:border-primary/50 transition-all duration-300 group h-full w-full overflow-hidden ${favClass}">
                     <div class="flex justify-between items-start pb-2 gap-2" style="border-bottom: 1px solid var(--color-border)">
@@ -1165,7 +1510,8 @@
                             </button>
                             <h3 class="text-base font-bold text-primary transition-colors leading-tight line-clamp-2 break-words" onmouseover="this.style.color='var(--color-text-hover)'" onmouseout="this.style.color=''"> ${item.name}</h3>
                         </div>
-                        <div class="flex items-center justify-end gap-1.5 shrink-0 mt-0.5">
+                        <div class="flex items-center justify-end gap-1.5 shrink-0 mt-0.5 flex-wrap">
+                            ${editBtn}
                             ${deleteBtn}
                             ${item.isCustom ? customBadge : ""}
                             ${!item.isCustom ? `<span class="${badgeClass} text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">${eraText}</span>` : ""}
@@ -1195,7 +1541,13 @@
                         <div class="text-xs text-primary uppercase font-bold tracking-wider group-hover/info:hidden">Ingredientes</div>
                         <div class="hidden group-hover/info:flex flex-col items-center text-xs w-full" style="color: var(--color-text-muted)">
                             <div class="font-bold mb-1 w-full text-left" style="color: var(--color-text)">Receita Original:</div>
-                            <div class="whitespace-pre-wrap text-left w-full">${item.ingredients}</div>
+                            <div class="whitespace-pre-wrap text-left w-full">${
+                              Array.isArray(item.ingredients)
+                                ? item.ingredients
+                                    .map((ing) => `${ing.qty}x ${ing.item}`)
+                                    .join(", ")
+                                : item.ingredients
+                            }</div>
                         </div>
                     </div>`
                         : ""
@@ -1236,7 +1588,7 @@
         const rangeInput = document.getElementById(rangeId);
         const numberInput = document.getElementById(
           rangeId.replace("range", "input"),
-        ); // Assuming inputId is derived from rangeId
+        );
         const totalDisplay = document.getElementById(totalId);
 
         const min = parseFloat(rangeInput.min);
@@ -1251,6 +1603,15 @@
           customPrices[itemId] = val;
           localStorage.setItem("customPrices", JSON.stringify(customPrices));
         }
+
+        const existingPH = priceHistory[itemId] || {};
+        priceHistory[itemId] = {
+          antigo: existingPH.antigo !== undefined ? existingPH.antigo : min,
+          atual: existingPH.atual !== undefined ? existingPH.atual : min,
+          customizado: val,
+          hasUpdate: false,
+        };
+        localStorage.setItem("priceHistory", JSON.stringify(priceHistory));
 
         // Update both inputs
         numberInput.value = val;
@@ -1597,6 +1958,11 @@
           JSON.stringify(customCreatedItems),
         );
 
+        delete customItemOverrides[itemId];
+        localStorage.setItem(
+          "customItemOverrides",
+          JSON.stringify(customItemOverrides),
+        );
         showToast("Item customizado deletado!");
         calculate();
         renderFavorites();
@@ -1664,11 +2030,263 @@
           showToast("Código de seed inválido ou corrompido.", "error");
         }
       }
+
+      let _editCardTarget = null;
+
+      function openEditCardModal(itemId, itemMin, itemMax, isCustom) {
+        _editCardTarget = { itemId, itemMin, itemMax, isCustom };
+
+        const ov = customItemOverrides[itemId] || {};
+        const cp = customPrices[itemId];
+        const currentMin = ov.min !== undefined ? ov.min : itemMin;
+        const currentMax = ov.max !== undefined ? ov.max : itemMax;
+        const currentPromo = cp !== undefined ? cp : currentMin;
+
+        document.getElementById("ecm-item-name").textContent =
+          itemId.split("_")[0];
+        document.getElementById("ecm-promo-input").value = currentPromo;
+        document.getElementById("ecm-min-input").value = currentMin;
+        document.getElementById("ecm-max-input").value = currentMax;
+
+        if (isCustom) {
+          const customItem = customCreatedItems.find(
+            (i) => getItemId(i) === itemId,
+          );
+          if (customItem) {
+            document.getElementById("ecm-custom-name").value =
+              customItem.name || "";
+            document.getElementById("ecm-custom-cat").value =
+              customItem.cat || "";
+            document.getElementById("ecm-custom-min").value =
+              customItem.min || 0;
+            document.getElementById("ecm-custom-max").value =
+              customItem.max || 0;
+            document.getElementById("ecm-custom-era").value =
+              customItem.era || 0;
+            const ings = customItem.ingredients;
+            document.getElementById("ecm-custom-ing").value = Array.isArray(
+              ings,
+            )
+              ? ings.map((i) => `${i.qty}x ${i.item}`).join(", ")
+              : ings || "";
+          }
+          document.getElementById("ecm-normal-tabs").classList.add("hidden");
+          document.getElementById("ecm-normal-body").classList.add("hidden");
+          document.getElementById("ecm-custom-body").classList.remove("hidden");
+        } else {
+          document.getElementById("ecm-normal-tabs").classList.remove("hidden");
+          document.getElementById("ecm-normal-body").classList.remove("hidden");
+          document.getElementById("ecm-custom-body").classList.add("hidden");
+          switchEditTab("promocao");
+        }
+
+        document.getElementById("edit-card-modal").classList.remove("hidden");
+      }
+
+      function closeEditCardModal() {
+        document.getElementById("edit-card-modal").classList.add("hidden");
+        _editCardTarget = null;
+      }
+
+      function switchEditTab(tab) {
+        const tabPromocao = document.getElementById("ecm-tab-promocao");
+        const tabBase = document.getElementById("ecm-tab-base");
+        const panelPromocao = document.getElementById("ecm-panel-promocao");
+        const panelBase = document.getElementById("ecm-panel-base");
+
+        if (tab === "promocao") {
+          tabPromocao.classList.add("bg-primary", "text-white");
+          tabPromocao.classList.remove("text-slate-400");
+          tabBase.classList.remove("bg-primary", "text-white");
+          tabBase.classList.add("text-slate-400");
+          panelPromocao.classList.remove("hidden");
+          panelBase.classList.add("hidden");
+        } else {
+          tabBase.classList.add("bg-primary", "text-white");
+          tabBase.classList.remove("text-slate-400");
+          tabPromocao.classList.remove("bg-primary", "text-white");
+          tabPromocao.classList.add("text-slate-400");
+          panelBase.classList.remove("hidden");
+          panelPromocao.classList.add("hidden");
+        }
+      }
+
+      function saveEditCard() {
+        if (!_editCardTarget) return;
+        const { itemId, isCustom } = _editCardTarget;
+
+        if (isCustom) {
+          const idx = customCreatedItems.findIndex(
+            (i) => getItemId(i) === itemId,
+          );
+          if (idx > -1) {
+            const name = document
+              .getElementById("ecm-custom-name")
+              .value.trim();
+            const cat =
+              document.getElementById("ecm-custom-cat").value.trim() ||
+              "Customizados";
+            const min =
+              parseFloat(document.getElementById("ecm-custom-min").value) || 0;
+            const max =
+              parseFloat(document.getElementById("ecm-custom-max").value) ||
+              min;
+            const era =
+              parseInt(document.getElementById("ecm-custom-era").value) || 0;
+            const ingText = document
+              .getElementById("ecm-custom-ing")
+              .value.trim();
+            let ingredients = [];
+            if (ingText) {
+              ingText
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .forEach((line) => {
+                  const match = line.match(/^(\d+)x\s+(.+)$/i);
+                  if (match)
+                    ingredients.push({
+                      qty: parseInt(match[1]),
+                      item: match[2].trim(),
+                    });
+                  else ingredients.push({ qty: 1, item: line });
+                });
+            }
+            customCreatedItems[idx] = {
+              ...customCreatedItems[idx],
+              name,
+              cat,
+              min,
+              max,
+              era,
+              ingredients,
+            };
+            localStorage.setItem(
+              "customCreatedItems",
+              JSON.stringify(customCreatedItems),
+            );
+          }
+        } else {
+          const activePanel = document
+            .getElementById("ecm-panel-promocao")
+            .classList.contains("hidden")
+            ? "base"
+            : "promocao";
+          if (activePanel === "promocao") {
+            const promoVal = parseFloat(
+              document.getElementById("ecm-promo-input").value,
+            );
+            if (!isNaN(promoVal)) {
+              customPrices[itemId] = promoVal;
+              localStorage.setItem(
+                "customPrices",
+                JSON.stringify(customPrices),
+              );
+            }
+          } else {
+            const newMin = parseFloat(
+              document.getElementById("ecm-min-input").value,
+            );
+            const newMax = parseFloat(
+              document.getElementById("ecm-max-input").value,
+            );
+            if (!isNaN(newMin) && !isNaN(newMax)) {
+              customItemOverrides[itemId] = { min: newMin, max: newMax };
+              localStorage.setItem(
+                "customItemOverrides",
+                JSON.stringify(customItemOverrides),
+              );
+              customPrices[itemId] = newMin;
+              localStorage.setItem(
+                "customPrices",
+                JSON.stringify(customPrices),
+              );
+            }
+          }
+        }
+
+        closeEditCardModal();
+        showToast(Config.EditCard.SavedToast);
+        calculate();
+        renderFavorites();
+      }
+
+      function resetEditCard() {
+        if (!_editCardTarget) return;
+        const { itemId } = _editCardTarget;
+        delete customItemOverrides[itemId];
+        delete customPrices[itemId];
+        localStorage.setItem(
+          "customItemOverrides",
+          JSON.stringify(customItemOverrides),
+        );
+        localStorage.setItem("customPrices", JSON.stringify(customPrices));
+        closeEditCardModal();
+        showToast(Config.EditCard.ResetToast);
+        calculate();
+        renderFavorites();
+      }
+
+      let _phmTarget = null;
+
+      function openPriceHistoryModal(itemId, itemMin) {
+        _phmTarget = { itemId, itemMin };
+        const ph = priceHistory[itemId] || {};
+        const antigo = ph.antigo !== undefined ? ph.antigo : itemMin;
+        const atual = itemMin;
+        const customizado =
+          ph.customizado !== undefined ? ph.customizado : itemMin;
+
+        const nameEl = document.getElementById("phm-item-name");
+        if (nameEl) nameEl.textContent = itemId.split("_")[0];
+
+        const body = document.getElementById("phm-body");
+        if (body) {
+          body.innerHTML = `
+            <div class="flex justify-between items-center p-3 rounded-lg" style="background:var(--color-input-bg)">
+              <span class="text-slate-400 font-semibold uppercase text-xs tracking-wider">Antigo</span>
+              <span class="font-bold text-slate-300">${antigo} Bz</span>
+            </div>
+            <div class="flex justify-between items-center p-3 rounded-lg border" style="background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3)">
+              <span class="font-semibold uppercase text-xs tracking-wider" style="color:#f97316">Atual</span>
+              <span class="font-bold" style="color:#f97316">${atual} Bz</span>
+            </div>
+            <div class="flex justify-between items-center p-3 rounded-lg" style="background:var(--color-input-bg)">
+              <span class="text-primary font-semibold uppercase text-xs tracking-wider">Seu Preço</span>
+              <span class="font-bold text-primary">${customizado} Bz</span>
+            </div>`;
+        }
+
+        const resetBtn = document.getElementById("phm-reset-btn");
+        if (resetBtn) {
+          resetBtn.onclick = () => {
+            if (!_phmTarget) return;
+            const { itemId, itemMin } = _phmTarget;
+            customPrices[itemId] = itemMin;
+            delete priceHistory[itemId];
+            localStorage.setItem("customPrices", JSON.stringify(customPrices));
+            localStorage.setItem("priceHistory", JSON.stringify(priceHistory));
+            closePriceHistoryModal();
+            showToast(Config.PriceHistory.ResetToast);
+            calculate();
+            renderFavorites();
+          };
+        }
+
+        document
+          .getElementById("price-history-modal")
+          .classList.remove("hidden");
+      }
+
+      function closePriceHistoryModal() {
+        document.getElementById("price-history-modal").classList.add("hidden");
+        _phmTarget = null;
+      }
     </script>
     <style>
       @keyframes slideIn {
         from {
-          transform: translateY(20px);
+          transform: translateY(-20px);
           opacity: 0;
         }
         to {

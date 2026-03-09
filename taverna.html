@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tavernas - LisaCalc</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Outfit", "sans-serif"],
+            },
+            colors: {
+              primary: "rgb(var(--color-primary-rgb) / <alpha-value>)",
+              secondary: "rgb(var(--color-secondary-rgb) / <alpha-value>)",
+              bg: "var(--color-bg)",
+              surface: "var(--color-surface)",
+              "coin-bz": "var(--color-coin-bz)",
+              "coin-gz": "var(--color-coin-gz)",
+              "coin-sz": "var(--color-coin-sz)",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      body {
+        background-color: var(--color-bg);
+        background-image:
+          radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.3) 0, transparent 50%),
+          radial-gradient(at 50% 0%, var(--color-surface) 0, transparent 50%),
+          radial-gradient(at 100% 0%, var(--color-secondary) 0, transparent 50%);
+        background-attachment: fixed;
+        color: var(--color-text);
+        font-family: "Outfit", sans-serif;
+      }
+      .glass-card {
+        background: var(--color-card-bg);
+        border: 1px solid var(--color-border);
+        backdrop-filter: blur(12px);
+      }
+      .tavern-card {
+        border-color: rgb(var(--accent-rgb) / 0.3);
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1),
+          inset 0 1px 0 0 rgb(255 255 255 / 0.1);
+        transition: all 0.3s ease;
+      }
+      .tavern-card:hover {
+        border-color: rgb(var(--accent-rgb) / 0.6);
+        box-shadow:
+          0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 0 20px rgb(var(--accent-rgb) / 0.2),
+          inset 0 1px 0 0 rgb(255 255 255 / 0.1);
+        transform: translateY(-2px);
+      }
+      .tab-btn.active {
+        background-color: var(--accent);
+        color: white;
+        border-color: var(--accent);
+      }
+      .style-drakenthal {
+        --accent: var(--color-taverna-drakenthal);
+        --accent-rgb: var(--color-taverna-drakenthal-rgb);
+      }
+      .style-skallheim {
+        --accent: var(--color-taverna-skallheim);
+        --accent-rgb: var(--color-taverna-skallheim-rgb);
+      }
+      .style-eldenrock {
+        --accent: var(--color-taverna-eldenrock);
+        --accent-rgb: var(--color-taverna-eldenrock-rgb);
+      }
+      .tavern-content {
+        display: none;
+        animation: fadeIn 0.4s ease-out forwards;
+      }
+      .tavern-content.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .range-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--color-bar-bg);
+        outline: none;
+      }
+      .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+        box-shadow: 0 0 10px rgb(var(--accent-rgb) / 0.8);
+        transition: transform 0.2s;
+      }
+      .range-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+    </style>
+    <script>
+      function applyThemeColors() {
+        const savedTheme = localStorage.getItem("app_theme") || "dark";
+        const savedConfigs = localStorage.getItem("app_themes_config");
+        if (savedConfigs) {
+          try {
+            const themes = JSON.parse(savedConfigs);
+            const theme = themes[savedTheme];
+            if (theme) {
+              const root = document.documentElement;
+              for (const [key, value] of Object.entries(theme)) {
+                if (key.startsWith("--color-")) {
+                  root.style.setProperty(key, value);
+                  if (value.startsWith("#")) {
+                    const r = parseInt(value.slice(1, 3), 16);
+                    const g = parseInt(value.slice(3, 5), 16);
+                    const b = parseInt(value.slice(5, 7), 16);
+                    root.style.setProperty(`${key}-rgb`, `${r} ${g} ${b}`);
+                  }
+                }
+              }
+            }
+          } catch (e) {}
+        }
+      }
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "app_settings_updated")
+          applyThemeColors();
+      });
+      applyThemeColors();
+    </script>
+  </head>
+  <body
+    class="flex flex-col min-h-screen font-sans p-4 md:p-8 style-drakenthal"
+  >
+    <div class="max-w-7xl mx-auto w-full">
+      <header class="text-center mb-8">
+        <h1
+          class="text-3xl md:text-5xl font-bold text-primary mb-2 tracking-wider uppercase drop-shadow-md"
+        >
+          Tavernas
+        </h1>
+
+        <div class="flex flex-wrap justify-center gap-3 mt-6">
+          <button
+            onclick="switchTavern('drakenthal')"
+            data-tavern="drakenthal"
+            class="tab-btn active px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50"
+          >
+            🐉 Drakenthal
+          </button>
+          <button
+            onclick="switchTavern('eldenrock')"
+            data-tavern="eldenrock"
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50"
+          >
+            🌿 Eldenrock
+          </button>
+          <button
+            onclick="switchTavern('skallheim')"
+            data-tavern="skallheim"
+            class="tab-btn px-6 py-2 rounded-full border border-slate-600 font-bold transition-all hover:border-primary/50"
+          >
+            ⚔️ Skallheim
+          </button>
+        </div>
+
+        <!-- Controles: Busca + Quantidade -->
+        <div
+          class="glass-card p-4 rounded-xl mt-6 border border-primary/20 shadow-xl"
+        >
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-grow">
+              <input
+                type="text"
+                id="taverna-search"
+                placeholder="Buscar item..."
+                autocomplete="off"
+                class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                style="
+                  background: var(--color-input-bg);
+                  border-color: var(--color-input-border);
+                  color: var(--color-text);
+                "
+                oninput="renderTaverna()"
+              />
+              <div class="absolute right-3 top-3 text-slate-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <input
+              type="number"
+              id="taverna-qty"
+              value="1"
+              min="1"
+              placeholder="Qtd"
+              class="w-24 border rounded-lg px-2 py-3 text-center font-bold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              style="
+                background: var(--color-input-bg);
+                border-color: var(--color-input-border);
+                color: var(--color-text);
+              "
+              oninput="renderTaverna()"
+            />
+          </div>
+        </div>
+      </header>
+
+      <!-- Container de resultados da taverna -->
+      <div
+        id="taverna-results"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-8"
+      ></div>
+
+      <div
+        id="toast-container"
+        class="fixed top-4 right-4 z-[60] flex flex-col gap-2"
+      ></div>
+
+      <!-- Carrinho da Taverna -->
+      <div id="taverna-carrinho-bar" class="fixed bottom-0 left-0 right-0 z-[50] transition-all duration-300"
+        style="background:var(--color-surface);border-top:1px solid var(--color-border)">
+        <!-- Header do carrinho (sempre visível) -->
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3 cursor-pointer select-none"
+          onclick="toggleCarrinho()">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7A1 1 0 007 17h10M17 13v4m0 0a2 2 0 104 0 2 2 0 00-4 0zM9 21a2 2 0 100-4 2 2 0 000 4z" /></svg>
+            <span class="font-bold text-sm" style="color:var(--accent)">Carrinho</span>
+            <span id="cart-count-badge"
+              class="text-xs font-bold px-2 py-0.5 rounded-full hidden transition-all"
+              style="background:rgb(var(--accent-rgb)/0.2);color:var(--accent)">0</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span id="cart-total-preview" class="text-sm font-bold hidden" style="color:var(--accent)"></span>
+            <button onclick="event.stopPropagation(); clearCarrinho()" id="cart-clear-btn"
+              class="hidden text-xs font-bold px-3 py-1.5 rounded transition-colors"
+              style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3)">
+              Limpar Venda
+            </button>
+            <svg id="cart-chevron" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:var(--accent)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+        </div>
+
+        <!-- Corpo do carrinho (expansível) -->
+        <div id="cart-body" class="hidden max-w-7xl mx-auto px-4 pb-4 max-h-64 overflow-y-auto">
+          <div id="cart-empty-msg"
+            class="text-center text-sm py-6 italic"
+            style="color:var(--color-text-muted)">Carrinho vazio.</div>
+          <div id="cart-items" class="flex flex-col gap-2"></div>
+          <div id="cart-footer" class="hidden mt-3 pt-3 flex justify-between items-center"
+            style="border-top:1px solid var(--color-border)">
+            <span class="text-xs font-bold uppercase tracking-wider" style="color:var(--accent)">Total da Venda</span>
+            <div id="cart-total-full" class="text-base font-bold" style="color:var(--accent)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Espaço para o carrinho não cobrir o conteúdo -->
+      <div id="cart-spacer" class="h-14 transition-all duration-300"></div>
+
+
+    <!-- Modal Editar Preço Base Taverna -->
+    <div
+      id="edit-taverna-modal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div class="glass-card p-6 rounded-xl w-full max-w-sm border-primary/50 shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold flex items-center gap-2" style="color:var(--accent)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Editar Item
+          </h2>
+          <p id="etm-item-name" class="text-xs text-slate-400 truncate max-w-[140px]"></p>
+        </div>
+
+        <!-- Abas do Modal -->
+        <div class="flex gap-2 mb-4 border-b border-slate-700/50 pb-2">
+            <button onclick="switchEditTab('base')" id="edit-tab-base" 
+                class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all border border-transparent"
+                style="color:var(--accent)">Preço Base</button>
+            <button onclick="switchEditTab('promo')" id="edit-tab-promo" 
+                class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all border border-transparent text-slate-500">Promoção</button>
+        </div>
+
+        <!-- Conteúdo Preço Base -->
+        <div id="edit-content-base" class="edit-tab-content">
+            <p class="text-[10px] text-slate-400 mb-3 italic">Altera o valor oficial do item (Preço Base).</p>
+            <label class="block text-[10px] font-bold mb-1 uppercase tracking-wider text-slate-500">Novo Preço Base (Bz)</label>
+            <input type="number" id="etm-price-input" step="0.01" min="0"
+                class="w-full rounded px-3 py-2 text-sm focus:outline-none transition-colors border border-slate-700"
+                style="background:var(--color-input-bg);color:var(--color-text)" />
+        </div>
+
+        <!-- Conteúdo Promoção -->
+        <div id="edit-content-promo" class="edit-tab-content hidden">
+            <p class="text-[10px] text-slate-400 mb-3 italic">Define um valor promocional temporário para este item.</p>
+            <label class="block text-[10px] font-bold mb-1 uppercase tracking-wider text-slate-500">Preço de Promoção (Bz)</label>
+            <input type="number" id="etm-promo-input" step="0.01" min="0"
+                class="w-full rounded px-3 py-2 text-sm focus:outline-none transition-colors border border-slate-700"
+                style="background:var(--color-input-bg);color:var(--color-text)" />
+        </div>
+
+        <div class="flex justify-between gap-3 mt-6">
+          <button onclick="resetEditTavernaModal()"
+            class="px-4 py-2 rounded font-bold text-sm text-slate-400 hover:text-orange-400 transition-colors border border-slate-600 hover:border-orange-400">
+            Resetar
+          </button>
+          <div class="flex gap-2">
+            <button onclick="closeEditTavernaModal()"
+              class="px-5 py-2 rounded font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors">
+              Cancelar
+            </button>
+            <button onclick="saveEditTavernaModal()"
+              class="px-5 py-2 rounded font-bold text-sm text-white transition-colors" style="background:var(--accent)">
+              Salvar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Histórico de Preço -->
+    <div
+      id="price-history-modal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="glass-card p-6 rounded-xl w-full max-w-sm border-primary/50 shadow-2xl"
+      >
+        <h2
+          class="text-xl font-bold text-primary mb-4"
+          id="price-history-modal-title"
+        >
+          Histórico de Preço
+        </h2>
+        <div
+          id="price-history-modal-body"
+          class="flex flex-col gap-3 text-sm mb-6"
+        ></div>
+        <div class="flex gap-3 justify-end">
+          <button
+            onclick="closePriceHistoryModal()"
+            class="px-4 py-2 rounded font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+          >
+            Fechar
+          </button>
+          <button
+            id="price-history-reset-btn"
+            class="px-4 py-2 rounded font-bold text-sm bg-primary hover:bg-emerald-500 text-white transition-colors"
+          >
+            Resetar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="settings.js"></script>
+    <script src="taverna/data.js"></script>
+    <script>
+      let currentTavern = "eldenrock";
+
+      let tavernaPrices = {};
+      try {
+        const s = localStorage.getItem("tavernaPrices");
+        if (s) tavernaPrices = JSON.parse(s);
+      } catch (e) {}
+
+      let tavernaPromos = {};
+      try {
+        const s = localStorage.getItem("tavernaPromos");
+        if (s) tavernaPromos = JSON.parse(s);
+      } catch (e) {}
+
+      let tavernaPriceHistory = {};
+      try {
+        const s = localStorage.getItem("tavernaPriceHistory");
+        if (s) tavernaPriceHistory = JSON.parse(s);
+      } catch (e) {}
+
+      let collapsedTavernaCategories = {};
+      try {
+        const s = localStorage.getItem("collapsedTavernaCategories");
+        if (s) collapsedTavernaCategories = JSON.parse(s);
+      } catch (e) {}
+
+      function getTavernaItemId(tavernId, itemName) {
+        return `taverna_${tavernId}_${itemName}`;
+      }
+
+      function switchTavern(tavernId) {
+        currentTavern = tavernId;
+        localStorage.setItem("last_taverna", tavernId);
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelector(`[data-tavern="${tavernId}"]`)
+          .classList.add("active");
+        document.body.className = `flex flex-col min-h-screen font-sans p-4 md:p-8 style-${tavernId}`;
+        renderTaverna();
+      }
+
+      function formatMoneyBz(amount) {
+        let totalBz = Math.floor(amount);
+        let gz = Math.floor(totalBz / 10000);
+        let remainderAfterGz = totalBz % 10000;
+        let sz = Math.floor(remainderAfterGz / 100);
+        let bz = remainderAfterGz % 100;
+        let parts = [];
+        if (gz > 0)
+          parts.push(`<span class="text-coin-gz font-bold">${gz} Gz</span>`);
+        if (sz > 0)
+          parts.push(`<span class="text-coin-sz font-bold">${sz} Sz</span>`);
+        const hasDecimals = amount % 1 !== 0;
+        if (bz > 0 || parts.length === 0 || hasDecimals) {
+          let bzDisplay = bz;
+          if (hasDecimals) {
+            bzDisplay = (bz + (amount % 1)).toLocaleString("pt-BR", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            });
+          }
+          parts.push(
+            `<span class="text-coin-bz font-bold">${bzDisplay} Bz</span>`,
+          );
+        }
+        return parts.join(", ");
+      }
+
+      function showToast(msg, type = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        const bg = type === "success" ? "bg-emerald-600" : "bg-red-500";
+        toast.className = `${bg} text-white px-4 py-2 rounded shadow-lg text-sm font-bold animate-[slideIn_0.3s_ease-out]`;
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transition = "opacity 0.3s";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      function updateTavernaPrice(
+        itemId,
+        precoBase,
+        value,
+        rangeId,
+        inputId,
+        totalId,
+      ) {
+        let val = parseFloat(value);
+        if (isNaN(val) || val < 0) val = precoBase;
+
+        const qty =
+          parseFloat(document.getElementById("taverna-qty").value) || 1;
+
+        const history = tavernaPriceHistory[itemId] || {};
+        tavernaPriceHistory[itemId] = {
+          antigo: history.antigo !== undefined ? history.antigo : precoBase,
+          atual: precoBase,
+          customizado: val,
+        };
+        tavernaPrices[itemId] = val;
+
+        localStorage.setItem("tavernaPrices", JSON.stringify(tavernaPrices));
+        localStorage.setItem(
+          "tavernaPriceHistory",
+          JSON.stringify(tavernaPriceHistory),
+        );
+
+        const rangeEl = document.getElementById(rangeId);
+        const inputEl = document.getElementById(inputId);
+        const totalEl = document.getElementById(totalId);
+
+        if (rangeEl) rangeEl.value = val;
+        if (inputEl) inputEl.value = val;
+
+        if (totalEl) {
+          const total = val * qty;
+          totalEl.innerHTML = `
+            <div class="flex justify-between items-end gap-2">
+              <span class="text-[9px] font-bold shrink-0" style="color:var(--accent)">Total</span>
+              <div class="flex flex-col items-end">
+                <div class="text-[13px] font-bold leading-tight">${formatMoneyBz(total)}</div>
+                <div class="text-[9px] mt-0.5" style="color:var(--color-text-muted)">${Math.floor(total).toLocaleString("pt-BR")} Bz</div>
+              </div>
+            </div>`;
+        }
+      }
+
+      let _priceHistoryTarget = null;
+
+      function openPriceHistoryModal(itemId, precoBase) {
+        _priceHistoryTarget = { itemId, precoBase };
+        const h = tavernaPriceHistory[itemId] || {};
+        const antigo = h.antigo !== undefined ? h.antigo : precoBase;
+        const atual = precoBase;
+        const customizado =
+          h.customizado !== undefined ? h.customizado : precoBase;
+
+        const body = document.getElementById("price-history-modal-body");
+        body.innerHTML = `
+          <div class="flex justify-between items-center p-3 rounded-lg" style="background:var(--color-input-bg)">
+            <span class="text-slate-400 font-semibold uppercase text-xs tracking-wider">Antigo</span>
+            <span class="font-bold text-slate-300">${antigo} Bz</span>
+          </div>
+          <div class="flex justify-between items-center p-3 rounded-lg" style="background:var(--color-input-bg)">
+            <span class="font-semibold uppercase text-xs tracking-wider" style="color:var(--accent)">Atual</span>
+            <span class="font-bold" style="color:var(--accent)">${atual} Bz</span>
+          </div>
+          <div class="flex justify-between items-center p-3 rounded-lg" style="background:var(--color-input-bg)">
+            <span class="text-primary font-semibold uppercase text-xs tracking-wider">Seu Preço</span>
+            <span class="font-bold text-primary">${customizado} Bz</span>
+          </div>`;
+
+        document.getElementById("price-history-reset-btn").onclick = () => {
+          if (!_priceHistoryTarget) return;
+          const { itemId, precoBase } = _priceHistoryTarget;
+          tavernaPrices[itemId] = precoBase;
+          delete tavernaPriceHistory[itemId];
+          localStorage.setItem("tavernaPrices", JSON.stringify(tavernaPrices));
+          localStorage.setItem(
+            "tavernaPriceHistory",
+            JSON.stringify(tavernaPriceHistory),
+          );
+          closePriceHistoryModal();
+          showToast("Preço resetado para o valor atual!");
+          renderTaverna();
+        };
+
+        document
+          .getElementById("price-history-modal")
+          .classList.remove("hidden");
+      }
+
+      function closePriceHistoryModal() {
+        document.getElementById("price-history-modal").classList.add("hidden");
+        _priceHistoryTarget = null;
+      }
+
+      let _editTavernaTarget = null;
+      let activeEditTab = 'base';
+
+      function switchEditTab(tab) {
+          activeEditTab = tab;
+          document.querySelectorAll('.edit-tab-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById(`edit-content-${tab}`).classList.remove('hidden');
+          
+          document.getElementById('edit-tab-base').classList.toggle('text-slate-500', tab !== 'base');
+          document.getElementById('edit-tab-base').style.borderColor = tab === 'base' ? 'var(--accent)' : 'transparent';
+          document.getElementById('edit-tab-base').style.background = tab === 'base' ? 'rgb(var(--accent-rgb)/0.1)' : 'transparent';
+          
+          document.getElementById('edit-tab-promo').classList.toggle('text-slate-500', tab !== 'promo');
+          document.getElementById('edit-tab-promo').style.borderColor = tab === 'promo' ? 'var(--accent)' : 'transparent';
+          document.getElementById('edit-tab-promo').style.background = tab === 'promo' ? 'rgb(var(--accent-rgb)/0.1)' : 'transparent';
+      }
+
+      function openEditTavernaModal(itemId, precoBase) {
+        _editTavernaTarget = { itemId, precoBase };
+        const item = tavernaData[currentTavern]?.find(i => getTavernaItemId(currentTavern, i.name) === itemId);
+        
+        const storedPrice = tavernaPrices[itemId] !== undefined ? tavernaPrices[itemId] : precoBase;
+        const storedPromo = tavernaPromos[itemId] !== undefined ? tavernaPromos[itemId] : (item?.promocao || 0);
+        
+        document.getElementById("etm-item-name").textContent = itemId.replace(/^taverna_[^_]+_/, "");
+        document.getElementById("etm-price-input").value = storedPrice;
+        document.getElementById("etm-promo-input").value = storedPromo;
+        
+        switchEditTab('base');
+        document.getElementById("edit-taverna-modal").classList.remove("hidden");
+      }
+
+      function closeEditTavernaModal() {
+        document.getElementById("edit-taverna-modal").classList.add("hidden");
+        _editTavernaTarget = null;
+      }
+
+      function saveEditTavernaModal() {
+        if (!_editTavernaTarget) return;
+        const { itemId, precoBase } = _editTavernaTarget;
+        const newPrice = parseFloat(document.getElementById("etm-price-input").value);
+        const newPromo = parseFloat(document.getElementById("etm-promo-input").value);
+        
+        if (!isNaN(newPrice) && newPrice >= 0) {
+            tavernaPrices[itemId] = newPrice;
+        }
+        
+        if (!isNaN(newPromo)) {
+            tavernaPromos[itemId] = newPromo;
+        }
+
+        localStorage.setItem("tavernaPrices", JSON.stringify(tavernaPrices));
+        localStorage.setItem("tavernaPromos", JSON.stringify(tavernaPromos));
+        
+        closeEditTavernaModal();
+        showToast("Dados do item atualizados!");
+        renderTaverna();
+      }
+
+      function resetEditTavernaModal() {
+        if (!_editTavernaTarget) return;
+        const { itemId } = _editTavernaTarget;
+        delete tavernaPrices[itemId];
+        delete tavernaPromos[itemId];
+        localStorage.setItem("tavernaPrices", JSON.stringify(tavernaPrices));
+        localStorage.setItem("tavernaPromos", JSON.stringify(tavernaPromos));
+        closeEditTavernaModal();
+        showToast("Dados resetados!");
+        renderTaverna();
+      }
+
+      function createTavernaCard(item, qty, index) {
+        const itemId = getTavernaItemId(currentTavern, item.name);
+        const precoOriginal = tavernaPrices[itemId] !== undefined ? tavernaPrices[itemId] : item.preco;
+        const promoVal = tavernaPromos[itemId] !== undefined ? tavernaPromos[itemId] : (item.promocao || 0);
+        
+        const isPromocao = promoVal > 0;
+        const precoBase = isPromocao ? promoVal : precoOriginal;
+        const total = precoBase * qty;
+
+        const history = tavernaPriceHistory[itemId];
+        const hasUpdate =
+          history &&
+          history.atual !== undefined &&
+          history.customizado !== undefined &&
+          history.atual !== history.customizado &&
+          history.antigo !== undefined &&
+          history.antigo !== history.atual;
+
+        const safeItemId = itemId.replace(/'/g, "\\'");
+
+        const tagBadge = (item.tag || (promoVal > 0))
+          ? `<span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider" style="background:rgb(var(--accent-rgb)/0.2);color:var(--accent)">${item.tag || "Promoção"}</span>`
+          : "";
+
+        const updateBadge = hasUpdate
+          ? `<button onclick="openPriceHistoryModal('${safeItemId}', ${precoOriginal})"
+               class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1 shrink-0 animate-pulse"
+               style="background:rgba(249,115,22,0.2);color:#f97316;border:1px solid rgba(249,115,22,0.4)"
+               title="${Config.PriceHistory.UpdatedTooltip}">
+               ${Config.PriceHistory.UpdatedBadgeText}
+             </button>`
+          : "";
+
+        const editTavernaBtn = `<button onclick="event.stopPropagation(); openEditTavernaModal('${safeItemId}', ${precoOriginal})" class="shrink-0 transition-colors focus:outline-none" style="color:var(--color-text-muted)" title="Editar preço base"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>`;
+
+        const safeName = item.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+        return `
+          <div class="glass-card tavern-card p-3 rounded-xl flex flex-col gap-2 h-full">
+            <div class="flex justify-between items-start gap-2 pb-2" style="border-bottom: 1px solid var(--color-border)">
+              <div class="flex items-center gap-2 flex-1 min-w-0">
+                <span class="shrink-0" style="color:var(--accent)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
+                    <path d="M7 2v20"/>
+                    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+                  </svg>
+                </span>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-base font-bold leading-tight" style="color:var(--accent)">${item.name}</h3>
+                  ${item.descricao ? `<p class="text-xs text-slate-400 mt-0.5">${item.descricao}</p>` : ""}
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                ${editTavernaBtn}
+                ${tagBadge}
+                ${updateBadge}
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5 flex-1">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-semibold uppercase tracking-wider" style="color:var(--color-text-muted)">Preço Base</span>
+                <div class="flex flex-col items-end">
+                  ${(item.promocao > 0 && item.promocao !== precoBase) ? `<span class="text-[9px] line-through text-slate-500">${precoOriginal} Bz</span>` : ""}
+                  <span class="font-bold" style="color:var(--color-text)">${precoBase} <span class="text-coin-bz text-[10px]">Bz</span></span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center p-1.5 rounded-lg" style="background:rgb(var(--accent-rgb)/0.08);border:1px solid rgb(var(--accent-rgb)/0.2)">
+                <span class="font-bold uppercase tracking-wider text-[10px]" style="color:var(--accent)">Total</span>
+                <span class="font-bold text-sm">${formatMoneyBz(total)}</span>
+              </div>
+            </div>
+
+            <button onclick="addToCarrinhoComQty('${safeItemId}', '${safeName}', ${precoBase})"
+              class="w-full py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              style="background:rgb(var(--accent-rgb)/0.15);border:1px solid rgb(var(--accent-rgb)/0.35);color:var(--accent)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+              Adicionar
+            </button>
+          </div>`;
+      }
+
+      function toggleTavernaCategory(catId) {
+        collapsedTavernaCategories[catId] = !collapsedTavernaCategories[catId];
+        localStorage.setItem(
+          "collapsedTavernaCategories",
+          JSON.stringify(collapsedTavernaCategories),
+        );
+        const grid = document.getElementById(`tav-grid-${catId}`);
+        const icon = document.getElementById(`tav-icon-${catId}`);
+        const badge = document.getElementById(`tav-count-${catId}`);
+        if (!grid) return;
+        if (collapsedTavernaCategories[catId]) {
+          grid.classList.add("hidden");
+          if (icon) icon.classList.add("-rotate-90");
+          if (badge) badge.classList.remove("hidden");
+        } else {
+          grid.classList.remove("hidden");
+          if (icon) icon.classList.remove("-rotate-90");
+          if (badge) badge.classList.add("hidden");
+        }
+      }
+
+      function renderTaverna() {
+        const container = document.getElementById("taverna-results");
+        container.innerHTML = "";
+        const items = tavernaData[currentTavern] || [];
+        const query = (
+          document.getElementById("taverna-search").value || ""
+        ).toLowerCase();
+        let qty = parseFloat(document.getElementById("taverna-qty").value) || 1;
+
+        let filtered = items;
+        if (query) {
+          filtered = items.filter(
+            (i) =>
+              i.name.toLowerCase().includes(query) ||
+              (i.cat && i.cat.toLowerCase().includes(query)) ||
+              (i.descricao && i.descricao.toLowerCase().includes(query)),
+          );
+        }
+
+        if (filtered.length === 0) {
+          container.innerHTML =
+            '<div class="col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-5 text-center text-slate-500 py-10 italic">Nenhum item encontrado.</div>';
+          return;
+        }
+
+        const grouped = {};
+        filtered.forEach((item) => {
+          if (!grouped[item.cat]) grouped[item.cat] = [];
+          grouped[item.cat].push(item);
+        });
+
+        let globalIndex = 0;
+        for (const [cat, catItems] of Object.entries(grouped)) {
+          const safeCatId = cat.replace(/[^a-zA-Z0-9]/g, "_");
+          const isCollapsed = !!collapsedTavernaCategories[safeCatId];
+
+          const header = document.createElement("div");
+          header.className =
+            "col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-5 mt-4 mb-2 pb-1 flex justify-between items-center cursor-pointer select-none";
+          header.style.borderBottom = "1px solid rgb(var(--accent-rgb)/0.3)";
+          header.onclick = () => toggleTavernaCategory(safeCatId);
+          header.innerHTML = `
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-bold uppercase tracking-widest pl-2" style="color:var(--accent);border-left:4px solid var(--accent)">${cat}</h2>
+              <span id="tav-count-${safeCatId}" class="text-sm px-2 py-0.5 rounded-full ${isCollapsed ? "" : "hidden"}" style="background:rgb(var(--accent-rgb)/0.2);color:var(--accent)">${catItems.length}</span>
+            </div>
+            <svg id="tav-icon-${safeCatId}" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform ${isCollapsed ? "-rotate-90" : ""}" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:var(--accent)">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>`;
+          container.appendChild(header);
+
+          const grid = document.createElement("div");
+          grid.id = `tav-grid-${safeCatId}`;
+          grid.className = `col-span-1 md:col-span-2 lg:col-span-4 xl:col-span-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 ${isCollapsed ? "hidden" : ""}`;
+
+          catItems.forEach((item) => {
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = createTavernaCard(item, qty, globalIndex++);
+            grid.appendChild(wrapper.firstElementChild);
+          });
+          container.appendChild(grid);
+        }
+      }
+
+      const lastTavern = localStorage.getItem("last_taverna") || "eldenrock";
+      switchTavern(lastTavern);
+    </script>
+    <script>
+      let tavernaCart = [];
+      let cartExpanded = false;
+      let clearConfirmState = false;
+
+      function addToCarrinho(itemId, itemName, preco) {
+        const qty = 1;
+        const existing = tavernaCart.find(e => e.itemId === itemId);
+        if (existing) {
+          existing.qty += qty;
+        } else {
+          tavernaCart.push({ itemId, name: itemName, preco, qty: qty });
+        }
+        renderCarrinho();
+        showToast(Config.Taverna.Carrinho.AddToast);
+
+        const badge = document.getElementById("cart-count-badge");
+        if (badge) {
+          badge.classList.remove("hidden");
+          badge.classList.add("scale-125");
+          setTimeout(() => badge.classList.remove("scale-125"), 200);
+        }
+      }
+
+      function addToCarrinhoComQty(itemId, itemName, preco) {
+        const qtyInput = document.getElementById("taverna-qty");
+        const qty = parseFloat(qtyInput.value) || 1;
+        
+        clearConfirmState = false;
+
+        const existingIndex = tavernaCart.findIndex(e => e.itemId === itemId);
+        if (existingIndex > -1) {
+          const item = tavernaCart.splice(existingIndex, 1)[0];
+          item.qty += qty;
+          tavernaCart.unshift(item);
+        } else {
+          tavernaCart.unshift({ itemId, name: itemName, preco, qty: qty });
+        }
+        renderCarrinho();
+        showToast(Config.Taverna.Carrinho.AddToast);
+
+        const badge = document.getElementById("cart-count-badge");
+        if (badge) {
+          badge.classList.remove("hidden");
+          badge.classList.add("scale-125");
+          setTimeout(() => badge.classList.remove("scale-125"), 200);
+        }
+      }
+
+      function removeFromCarrinho(itemId) {
+        tavernaCart = tavernaCart.filter(e => e.itemId !== itemId);
+        renderCarrinho();
+      }
+
+      function updateCartQty(itemId, newQty) {
+        const q = parseInt(newQty);
+        if (isNaN(q) || q < 1) return;
+        const item = tavernaCart.find(e => e.itemId === itemId);
+        if (item) item.qty = q;
+        renderCarrinho();
+      }
+
+      function clearCarrinho() {
+        if (!clearConfirmState) {
+          clearConfirmState = true;
+          renderCarrinho();
+          // Reset state if not clicked confirmed within 3 seconds
+          setTimeout(() => {
+            if (clearConfirmState) {
+              clearConfirmState = false;
+              renderCarrinho();
+            }
+          }, 3000);
+          return;
+        }
+
+        tavernaCart = [];
+        clearConfirmState = false;
+        renderCarrinho();
+      }
+
+      function toggleCarrinho() {
+        cartExpanded = !cartExpanded;
+        const body = document.getElementById("cart-body");
+        const chevron = document.getElementById("cart-chevron");
+        const spacer = document.getElementById("cart-spacer");
+        
+        if (cartExpanded) {
+          body.classList.remove("hidden");
+          chevron.style.transform = "rotate(180deg)";
+          if (spacer) spacer.style.height = "320px";
+        } else {
+          body.classList.add("hidden");
+          chevron.style.transform = "";
+          if (spacer) spacer.style.height = "56px";
+        }
+      }
+
+      function renderCarrinho() {
+        const badge = document.getElementById("cart-count-badge");
+        const clearBtn = document.getElementById("cart-clear-btn");
+        const emptyMsg = document.getElementById("cart-empty-msg");
+        const itemsEl = document.getElementById("cart-items");
+        const footer = document.getElementById("cart-footer");
+        const totalFull = document.getElementById("cart-total-full");
+        const totalPreview = document.getElementById("cart-total-preview");
+
+        const totalItems = tavernaCart.reduce((sum, e) => sum + e.qty, 0);
+        const totalBz = tavernaCart.reduce((sum, e) => sum + e.preco * e.qty, 0);
+
+        if (badge) { badge.textContent = totalItems; badge.classList.toggle("hidden", totalItems === 0); }
+        
+        if (clearBtn) {
+          clearBtn.classList.toggle("hidden", tavernaCart.length === 0);
+          clearBtn.textContent = clearConfirmState ? Config.Taverna.Carrinho.ConfirmBtn : Config.Taverna.Carrinho.ClearBtn;
+          if (clearConfirmState) {
+            clearBtn.style.background = "rgba(239,68,68,0.3)";
+            clearBtn.style.borderColor = "#ef4444";
+          } else {
+            clearBtn.style.background = "rgba(239,68,68,0.15)";
+            clearBtn.style.borderColor = "rgba(239,68,68,0.3)";
+          }
+        }
+
+        if (totalPreview) { totalPreview.innerHTML = formatMoneyBz(totalBz); totalPreview.classList.toggle("hidden", tavernaCart.length === 0); }
+        if (totalFull) totalFull.innerHTML = formatMoneyBz(totalBz);
+        if (footer) footer.classList.toggle("hidden", tavernaCart.length === 0);
+
+        if (!itemsEl || !emptyMsg) return;
+
+        if (tavernaCart.length === 0) {
+          emptyMsg.classList.remove("hidden");
+          itemsEl.innerHTML = "";
+          return;
+        }
+        emptyMsg.classList.add("hidden");
+        itemsEl.innerHTML = tavernaCart.map(entry => {
+          const sub = entry.preco * entry.qty;
+          const safeId = entry.itemId.replace(/'/g, "\\'");
+          return `<div class="flex items-center gap-2 py-2 rounded-lg px-2" style="background:rgb(var(--accent-rgb)/0.05);border:1px solid rgb(var(--accent-rgb)/0.15)">
+            <span class="flex-1 text-xs font-bold truncate" style="color:var(--color-text)">${entry.name}</span>
+            <div class="flex items-center gap-1 shrink-0">
+              <span class="text-[10px]" style="color:var(--color-text-muted)">${entry.preco} Bz ×</span>
+              <input type="number" min="1" value="${entry.qty}"
+                class="w-10 text-xs text-center rounded px-1 py-0.5 font-bold focus:outline-none"
+                style="background:var(--color-input-bg);border:1px solid var(--color-input-border);color:var(--color-text)"
+                onchange="updateCartQty('${safeId}', this.value)" />
+              <span class="text-xs font-bold ml-1" style="color:var(--accent)">${Math.floor(sub)} Bz</span>
+            </div>
+            <button onclick="removeFromCarrinho('${safeId}')" class="ml-1 shrink-0 text-slate-500 hover:text-red-500 transition-colors" title="Remover">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>`;
+        }).join("");
+      }
+    </script>
+    <style>
+      @keyframes slideIn {
+        from {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </body>
+</html>

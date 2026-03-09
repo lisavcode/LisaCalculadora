@@ -1,5 +1,17 @@
 const changelogData = [
   {
+    version: "1.5.0",
+    date: "09/03/2026",
+    changes: [
+      "Sistema de Taverna aprimorado: agora os itens exibem 'PREÇO BASE' (unitário) e 'TOTAL' (multiplicado pela quantidade global).",
+      "Lógica de Promoção Automática: O sistema agora identifica e aplica a tag 'Promoção' e o preço riscado automaticamente se houver um valor promocional definido.",
+      "Adição Inteligente ao Carrinho: O botão de adicionar agora respeita a quantidade definida no seletor do topo da página.",
+      "Novo Modal de Edição (Lápis): Interface com abas para editar o Preço Base e o Preço de Promoção de forma independente.",
+      "Persistência Avançada: Todas as edições de preço e promoções feitas pelo usuário são salvas localmente no navegador.",
+      "Correção de Layout (Carrinho): Implementado espaçamento dinâmico no final da página para que o carrinho aberto não cubra os itens da lista.",
+    ],
+  },
+  {
     version: "1.4.1",
     date: "06/03/2026",
     changes: [

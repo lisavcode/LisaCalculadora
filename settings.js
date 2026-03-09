@@ -26,6 +26,9 @@ const DefaultThemes = {
     "--color-badge-3": "#a855f7",
     "--color-badge-4": "#f97316",
     "--color-badge-5": "#ef4444",
+    "--color-taverna-drakenthal": "#f97316",
+    "--color-taverna-skallheim": "#3b82f6",
+    "--color-taverna-eldenrock": "#10b981",
     hue: 0,
     saturation: 0,
     lightness: 0,
@@ -122,6 +125,9 @@ const DefaultThemes = {
     "--color-badge-3": "#666666",
     "--color-badge-4": "#444444",
     "--color-badge-5": "#222222",
+    "--color-taverna-drakenthal": "#888888",
+    "--color-taverna-skallheim": "#666666",
+    "--color-taverna-eldenrock": "#444444",
     hue: 0,
     saturation: 0,
     lightness: 0,
@@ -140,6 +146,14 @@ const Settings = {
     this.createSettingsUI();
 
     // Escuta atualizações vindas do Hub (Pai) ou de outros scripts
+    window.addEventListener("message", (e) => {
+      if (e.data && e.data.type === "app_settings_updated") {
+        this.load();
+        this.apply();
+        this.updateColorInputs();
+      }
+    });
+
     window.addEventListener("app_settings_updated", () => {
       this.load();
       this.apply();
@@ -210,11 +224,7 @@ const Settings = {
 
     // Dispara evento para o pai (Hub SPA) se estiver em iframe
     if (window.parent && window.parent !== window) {
-      window.parent.dispatchEvent(
-        new CustomEvent("app_settings_updated", {
-          detail: { theme: this.currentTheme, themes: this.themes },
-        }),
-      );
+      window.parent.postMessage({ type: "app_settings_updated" }, "*");
     }
   },
 
@@ -907,6 +917,11 @@ const Settings = {
         "--color-badge-3": "Era 3 (Raro)",
         "--color-badge-4": "Era 4 (Épico)",
         "--color-badge-5": "Era 5 (Lendário)",
+      },
+      TAVERNAS: {
+        "--color-taverna-drakenthal": "Taverna Drakenthal",
+        "--color-taverna-skallheim": "Taverna Skallheim",
+        "--color-taverna-eldenrock": "Taverna Eldenrock",
       },
     };
 

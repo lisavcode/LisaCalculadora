@@ -179,6 +179,11 @@
       }
 
       applyThemeColors();
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "app_settings_updated") {
+          applyThemeColors();
+        }
+      });
       window.addEventListener("app_settings_updated", applyThemeColors);
       window.addEventListener("storage", (e) => {
         if (e.key === "app_themes_config" || e.key === "app_theme")
