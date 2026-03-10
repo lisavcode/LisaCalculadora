@@ -942,8 +942,14 @@
         }
       }
 
-      const lastTavern = localStorage.getItem("last_taverna") || "eldenrock";
-      switchTavern(lastTavern);
+      (function initTavernaView() {
+        const token = AccessControl.getToken();
+        const perms = AccessControl.getPermissions(token);
+        const allowed = (perms && perms.tavernas) ? perms.tavernas : ["drakenthal", "eldenrock", "skallheim"];
+        const lastTavern = localStorage.getItem("last_taverna") || "drakenthal";
+        const startTavern = allowed.includes(lastTavern) ? lastTavern : allowed[0];
+        switchTavern(startTavern);
+      })();
     </script>
     <script>
       let tavernaCart = [];
