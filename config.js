@@ -72,6 +72,13 @@ const Config = {
       RemoveTitle: "Remover item",
     },
   },
+  Auth: {
+    InvalidTokenMessage: "Código de acesso inválido.",
+    AccessDeniedTitle: "Acesso Restrito",
+    InputPlaceholder: "Cole seu código de acesso aqui",
+    SubmitBtn: "Acessar",
+    DeniedPage: "acesso-negado.html",
+  },
   EditCard: {
     Title: "Editar Item",
     TabPromocao: "Promoção",

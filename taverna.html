@@ -125,6 +125,7 @@
         transform: scale(1.2);
       }
     </style>
+    <script src="auth.js"></script>
     <script>
       function applyThemeColors() {
         const savedTheme = localStorage.getItem("app_theme") || "dark";
@@ -153,8 +154,44 @@
       window.addEventListener("message", (e) => {
         if (e.data && e.data.type === "app_settings_updated")
           applyThemeColors();
+        if (e.data && e.data.type === "lisa_token") {
+          const newPerms = AccessControl.getPermissions(e.data.token);
+          if (newPerms) {
+            sessionStorage.setItem(AccessControl.SESSION_KEY, e.data.token);
+            applyTavernPermissions(newPerms);
+          }
+        }
       });
       applyThemeColors();
+
+      function applyTavernPermissions(perms) {
+        if (!perms) return;
+        const allowed = perms.tavernas || [];
+        const allTavernas = ["drakenthal", "eldenrock", "skallheim"];
+        allTavernas.forEach((t) => {
+          if (!allowed.includes(t)) {
+            document.querySelectorAll(`[data-tavern="${t}"]`).forEach((el) => {
+              el.style.display = "none";
+            });
+          }
+        });
+        const firstAllowed = allowed.find((t) => allTavernas.includes(t));
+        if (firstAllowed && typeof switchTavern === "function") {
+          switchTavern(firstAllowed);
+        }
+      }
+
+      (function initTavernaAuth() {
+        const token = AccessControl.getToken();
+        const perms = AccessControl.getPermissions(token);
+        if (!perms || !perms.tavernas || perms.tavernas.length === 0) {
+          window.location.href = "acesso-negado.html";
+          return;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+          applyTavernPermissions(perms);
+        });
+      })();
     </script>
   </head>
   <body

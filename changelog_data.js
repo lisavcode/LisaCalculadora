@@ -1,5 +1,16 @@
 const changelogData = [
   {
+    version: "1.6.0",
+    date: "10/03/2026",
+    changes: [
+      "Sistema de Acesso: Profissão ativa salva no navegador ao autenticar, corrigindo a aba inicial no seletor de itens das Encomendas.",
+      "Encomendas: Corrigido bug onde o picker de itens sempre abria na aba 'Caçador' independente do token utilizado.",
+      "Página de Acesso: Novo card de perfil do Discord com avatar animado, banner e botão de contato.",
+      "Página de Acesso: Responsividade corrigida em telas menores (mobile).",
+    ],
+  },
+  {
+
     version: "1.5.2",
     date: "09/03/2026",
     changes: [

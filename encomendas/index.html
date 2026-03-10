@@ -490,6 +490,7 @@
     </div>
 
     <!-- Shared Config & Data -->
+    <script src="../auth.js"></script>
     <script src="../config.js"></script>
     <!-- Moved settings load to end of body to align with fix -->
     <script src="../settings.js"></script>
@@ -497,12 +498,49 @@
     <!-- Logic -->
     <script src="script.js"></script>
     <script>
-      // Ensure settings loaded safely
-      document.addEventListener("DOMContentLoaded", () => {
-        if (typeof Settings !== "undefined" && Settings.init) {
-          // Settings.init() is already called in script.js, checking redundancy
+      (function initEncomendasAuth() {
+        const token = AccessControl.getToken();
+        const perms = AccessControl.getPermissions(token);
+        if (!perms || !perms.encomendas) {
+          window.location.href = "../acesso-negado.html";
+          return;
         }
-      });
+
+        AccessControl.saveProfessionToStorage(perms);
+
+        const allowed = perms.professions || [];
+        const allProfs = ["cacador", "alquimista", "minerador", "artesao", "alfaiate", "ferreiro", "treinador", "desocupado"];
+        allProfs.forEach((prof) => {
+          if (!allowed.includes(prof)) {
+            document.querySelectorAll(`[data-tab="${prof}"]`).forEach((el) => {
+              el.style.display = "none";
+            });
+          }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+          if (typeof ItemPicker !== "undefined") {
+            const saved = localStorage.getItem(AccessControl.PROFESSION_KEY);
+            if (saved) ItemPicker.currentTab = saved;
+          }
+        });
+
+        window.addEventListener("message", function (e) {
+          if (e.data && e.data.type === "lisa_token") {
+            const newPerms = AccessControl.getPermissions(e.data.token);
+            if (newPerms && newPerms.encomendas) {
+              sessionStorage.setItem(AccessControl.SESSION_KEY, e.data.token);
+              AccessControl.saveProfessionToStorage(newPerms);
+              if (typeof ItemPicker !== "undefined") {
+                const saved = localStorage.getItem(AccessControl.PROFESSION_KEY);
+                if (saved) ItemPicker.currentTab = saved;
+              }
+            } else if (newPerms && !newPerms.encomendas) {
+              window.location.href = "../acesso-negado.html";
+            }
+          }
+        });
+      })();
     </script>
   </body>
 </html>

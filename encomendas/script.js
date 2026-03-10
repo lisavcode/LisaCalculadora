@@ -559,9 +559,9 @@ const NotesManager = {
 // --- Item Picker Logic (Ported from Calculator) ---
 const ItemPicker = {
   isOpen: false,
-  currentTab: "cacador",
+  currentTab: (typeof AccessControl !== "undefined" && localStorage.getItem(AccessControl.PROFESSION_KEY)) || "cacador",
   items: [],
-  renderLimit: 50, // Permance Optimization
+  renderLimit: 50,
 
   init() {
     if (typeof dataByProfession === "undefined") window.dataByProfession = {};

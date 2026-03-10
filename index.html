@@ -236,6 +236,7 @@
         }
       }
     </style>
+    <script src="auth.js"></script>
   </head>
   <body>
     <iframe id="view-inicio" src="inicio.html" class="app-view active"></iframe>
@@ -534,6 +535,51 @@
 
     <script>
       let isAnimating = false;
+
+      // --- Autenticação ---
+      (function initAuth() {
+        const perms = AccessControl.initHub();
+        if (!perms) return;
+
+        const token = AccessControl.getToken();
+
+        function passTokenToIframe(iframe) {
+          try {
+            if (iframe.contentWindow) {
+              iframe.contentWindow.postMessage({ type: "lisa_token", token: token }, "*");
+            }
+          } catch (e) {}
+        }
+
+        document.querySelectorAll("iframe.app-view").forEach((f) => passTokenToIframe(f));
+
+        const tavernaBtn = document.querySelector('.nav-item[data-target="taverna"]');
+        const encomendasBtn = document.querySelector('.nav-item[data-target="encomendas"]');
+        const calculadoraBtn = document.querySelector('.nav-item[data-target="calculadora"]');
+
+        if (!perms.encomendas && encomendasBtn) {
+          encomendasBtn.style.display = "none";
+          document.getElementById("view-encomendas").style.display = "none";
+        }
+
+        const hasProfessions = perms.professions && perms.professions.length > 0;
+        if (!hasProfessions && calculadoraBtn) {
+          calculadoraBtn.style.display = "none";
+          document.getElementById("view-calculadora").style.display = "none";
+        }
+
+        const hasTaverna = perms.tavernas && perms.tavernas.length > 0;
+        if (!hasTaverna && tavernaBtn) {
+          tavernaBtn.style.display = "none";
+          document.getElementById("view-taverna").style.display = "none";
+        }
+
+        document.querySelectorAll("iframe.app-view").forEach((iframe) => {
+          iframe.addEventListener("load", function () {
+            passTokenToIframe(iframe);
+          });
+        });
+      })();
 
       // --- Sidebar Toggle ---
       function toggleSidebar() {

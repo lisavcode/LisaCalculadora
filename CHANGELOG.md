@@ -2,7 +2,16 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [1.3.3] - 2026-03-06
+## [1.6.0] - 2026-03-10
+
+- Sistema de Acesso: URL de acesso simplificada — o token agora é passado direto na query string (`?TOKEN`), sem chave.
+- Sistema de Acesso: Profissão ativa agora é salva no `localStorage` ao autenticar, garantindo que o seletor de itens nas Encomendas abre na aba correta da profissão do usuário.
+- Encomendas: Corrigido bug onde o picker de itens sempre abria na aba 'Caçador' independente do token utilizado.
+- Página Acesso Negado: Adicionado card de perfil do Discord com avatar, banner e botão de contato, carregados dinamicamente via API pública.
+- Página Acesso Negado: Melhorada a responsividade da página em telas menores (mobile).
+- Arquivo LINKS.links criado com todos os links de acesso organizados por perfil.
+
+## [1.5.2] - 2026-03-09
 
 - Menu de categoria no mobile refatorado para um 'Dropdown' estilo lista, agora exibe claramente a seleção atual sem sobrepor tela toda.
 - Configurações da Calculadora movidas para o Menu Lateral Global, alinhado com outras opções do sistema.
