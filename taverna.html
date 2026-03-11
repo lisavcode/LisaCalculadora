@@ -252,7 +252,7 @@
                   border-color: var(--color-input-border);
                   color: var(--color-text);
                 "
-                oninput="renderTaverna()"
+                oninput="debouncedRender()"
               />
               <div class="absolute right-3 top-3 text-slate-400">
                 <svg
@@ -283,7 +283,7 @@
                 border-color: var(--color-input-border);
                 color: var(--color-text);
               "
-              oninput="renderTaverna()"
+              onchange="debouncedRender()"
             />
           </div>
         </div>
@@ -444,6 +444,12 @@
     <script src="taverna/data.js"></script>
     <script>
       let currentTavern = "eldenrock";
+
+      let _renderTimer = null;
+      function debouncedRender() {
+        clearTimeout(_renderTimer);
+        _renderTimer = setTimeout(renderTaverna, 300);
+      }
 
       let tavernaPrices = {};
       try {
@@ -728,7 +734,7 @@
           if (!isNaN(val) && val >= 0) {
               tavernaPrices[itemId] = val;
               localStorage.setItem("tavernaPrices", JSON.stringify(tavernaPrices));
-              renderTaverna();
+              debouncedRender();
           }
       }
 
@@ -737,7 +743,7 @@
           if (!isNaN(val)) {
               tavernaPromos[itemId] = val;
               localStorage.setItem("tavernaPromos", JSON.stringify(tavernaPromos));
-              renderTaverna();
+              debouncedRender();
           }
       }
 
@@ -838,7 +844,7 @@
                     onchange="fastUpdateBase('${safeItemId}', this.value)" />
                   <input type="range" min="0" max="${Math.max(100, precoOriginal * 2)}" step="1" value="${precoOriginal}" 
                     class="w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary"
-                    oninput="fastUpdateBase('${safeItemId}', this.value)" />
+                    onchange="fastUpdateBase('${safeItemId}', this.value)" />
                 </div>
               </div>
 

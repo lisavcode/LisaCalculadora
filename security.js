@@ -148,11 +148,6 @@
       log("DRM: Validado com sucesso.");
     }
 
-    if (Config.DRM.EnableDebuggerLoop) {
-      setInterval(() => {
-        debugger;
-      }, 1000);
-    }
 
     if (Config.DRM.OwnerName) {
       console.log(

@@ -214,13 +214,15 @@
       /* Mobile adjustments for Sidebar */
       @media (max-width: 767px) {
         .app-view {
-          /* On mobile, app view stays static and full width, sidebar overlays on top */
+          width: calc(100vw - 64px) !important;
+          left: 64px !important;
+        }
+        body.sidebar-collapsed .app-view {
           width: calc(100vw - 64px) !important;
           left: 64px !important;
         }
 
         .navbar {
-          /* Expand width to something reasonable on a small 375px display */
           width: 220px;
         }
         body.sidebar-collapsed .navbar {
@@ -594,8 +596,20 @@
           localStorage.getItem("sidebar_collapsed") === "true";
         if (isCollapsed) {
           document.body.classList.add("sidebar-collapsed");
+        } else if (window.innerWidth <= 767) {
+          document.body.classList.add("sidebar-collapsed");
+          localStorage.setItem("sidebar_collapsed", "true");
         }
       })();
+
+      document.querySelectorAll(".app-view").forEach((view) => {
+        view.addEventListener("touchstart", function () {
+          if (window.innerWidth <= 767 && !document.body.classList.contains("sidebar-collapsed")) {
+            document.body.classList.add("sidebar-collapsed");
+            localStorage.setItem("sidebar_collapsed", "true");
+          }
+        }, { passive: true });
+      });
 
       // --- Controle de Visibilidade UI ---
       function setUIVisibility(visible) {

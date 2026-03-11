@@ -1,5 +1,10 @@
 const changelogData = [
   {
+    version: "1.6.1",
+    date: "11/03/2026",
+    changes: ["Fix: Travamento ao abrir no celular."],
+  },
+  {
     version: "1.6.0",
     date: "10/03/2026",
     changes: [
@@ -10,12 +15,9 @@ const changelogData = [
     ],
   },
   {
-
     version: "1.5.2",
     date: "09/03/2026",
-    changes: [
-      "Adicionado botão de config para tavernas.",
-    ],
+    changes: ["Adicionado botão de config para tavernas."],
   },
   {
     version: "1.5.0",

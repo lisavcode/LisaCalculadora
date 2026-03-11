@@ -19,10 +19,10 @@ const Config = {
       "Licença inválida ou domínio não autorizado. Entre em contato com o administrador.",
   },
   DRM: {
-    Enabled: true,
+    Enabled: false,
     AllowedDomains: ["localhost", "127.0.0.1", "lisavcode.github.io"],
     OwnerName: "Lisa",
-    EnableDebuggerLoop: true,
+    EnableDebuggerLoop: false,
   },
   TrainerUI: {
     UnitaryText: "Custo Unitário",
