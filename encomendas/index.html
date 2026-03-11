@@ -512,7 +512,16 @@
         AccessControl.saveProfessionToStorage(perms);
 
         const allowed = perms.professions || [];
-        const allProfs = ["cacador", "alquimista", "minerador", "artesao", "alfaiate", "ferreiro", "treinador", "desocupado"];
+        const allProfs = [
+          "cacador",
+          "alquimista",
+          "minerador",
+          "artesao",
+          "alfaiate",
+          "ferreiro",
+          "treinador",
+          "desocupado",
+        ];
         allProfs.forEach((prof) => {
           if (!allowed.includes(prof)) {
             document.querySelectorAll(`[data-tab="${prof}"]`).forEach((el) => {
@@ -535,7 +544,9 @@
               sessionStorage.setItem(AccessControl.SESSION_KEY, e.data.token);
               AccessControl.saveProfessionToStorage(newPerms);
               if (typeof ItemPicker !== "undefined") {
-                const saved = localStorage.getItem(AccessControl.PROFESSION_KEY);
+                const saved = localStorage.getItem(
+                  AccessControl.PROFESSION_KEY,
+                );
                 if (saved) ItemPicker.currentTab = saved;
               }
             } else if (newPerms && !newPerms.encomendas) {
