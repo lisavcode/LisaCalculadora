@@ -811,7 +811,7 @@
         if (isAnimating) return;
 
         // Auto-collapse sidebar on mobile
-        if (window.innerWidth <= 767 && !isSidebarCollapsed) {
+        if (window.innerWidth <= 767 && !document.body.classList.contains("sidebar-collapsed")) {
           toggleSidebar();
         }
 
