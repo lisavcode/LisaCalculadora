@@ -252,6 +252,21 @@
       }
     </style>
     <script src="auth.js"></script>
+    <style id="mobile-simplifier">
+      @media (max-width: 768px) {
+        * {
+          transition: none !important;
+          animation: none !important;
+          backdrop-filter: none !important;
+        }
+        .glass-card, [class*="glass"] {
+          background-color: rgb(var(--color-surface-rgb) / 0.95) !important;
+        }
+        .shadow-neon, [class*="shadow-neon"], .hover\:shadow-neon:hover {
+          box-shadow: none !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Mobile Sidebar Overlay -->
@@ -831,29 +846,15 @@
         // Save last view preference
         localStorage.setItem("icarus_last_view", targetId);
 
-        const tvLine = document.getElementById("tv-line");
         const nextView = document.getElementById(`view-${targetId}`);
 
         if (!nextView.getAttribute("src")) {
           nextView.setAttribute("src", nextView.getAttribute("data-src"));
         }
 
-        // Start Implosion
-        currentActive.classList.add("imploding");
-
-        setTimeout(() => {
-          tvLine.classList.add("active");
-
-          setTimeout(() => {
-            currentActive.classList.remove("active", "imploding");
-            nextView.classList.add("active");
-
-            setTimeout(() => {
-              tvLine.classList.remove("active");
-              isAnimating = false;
-            }, 300);
-          }, 300);
-        }, 300);
+        currentActive.classList.remove("active");
+        nextView.classList.add("active");
+        isAnimating = false;
       }
 
       window.navigateTo = switchView;

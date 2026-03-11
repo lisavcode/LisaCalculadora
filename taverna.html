@@ -196,6 +196,21 @@
         });
       })();
     </script>
+    <style id="mobile-simplifier">
+      @media (max-width: 768px) {
+        * {
+          transition: none !important;
+          animation: none !important;
+          backdrop-filter: none !important;
+        }
+        .glass-card, [class*="glass"] {
+          background-color: rgb(var(--color-surface-rgb) / 0.95) !important;
+        }
+        .shadow-neon, [class*="shadow-neon"], .hover\:shadow-neon:hover {
+          box-shadow: none !important;
+        }
+      }
+    </style>
   </head>
   <body
     class="flex flex-col min-h-screen font-sans p-4 md:p-8 style-drakenthal"

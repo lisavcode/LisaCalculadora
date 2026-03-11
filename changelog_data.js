@@ -1,5 +1,10 @@
 const changelogData = [
   {
+    version: "1.6.3",
+    date: "11/03/2026",
+    changes: ["Arrumado não conseguir mudar o menu."],
+  },
+  {
     version: "1.6.2",
     date: "11/03/2026",
     changes: ["Fix: Travamento ao abrir no celular."],
