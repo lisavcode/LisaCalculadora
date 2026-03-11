@@ -1,6 +1,6 @@
 const changelogData = [
   {
-    version: "1.6.3",
+    version: "1.6.4",
     date: "11/03/2026",
     changes: ["Arrumado não conseguir mudar o menu."],
   },

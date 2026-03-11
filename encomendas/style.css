@@ -5,8 +5,13 @@ body {
     radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.3) 0, transparent 50%),
     radial-gradient(at 50% 0%, var(--color-surface) 0, transparent 50%),
     radial-gradient(at 100% 0%, var(--color-secondary) 0, transparent 50%);
-  background-attachment: fixed;
   color: var(--color-text); /* Ensure main text color is applied */
+}
+
+@media (min-width: 769px) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 .glass-card {
