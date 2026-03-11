@@ -211,8 +211,21 @@
         flex-shrink: 0;
       }
 
+      #mobile-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40; /* Below navbar (50) but above app-view */
+        backdrop-filter: blur(2px);
+      }
+
       /* Mobile adjustments for Sidebar */
       @media (max-width: 767px) {
+        body:not(.sidebar-collapsed) #mobile-sidebar-overlay {
+          display: block;
+        }
+
         .app-view {
           width: calc(100vw - 64px) !important;
           left: 64px !important;
@@ -241,25 +254,28 @@
     <script src="auth.js"></script>
   </head>
   <body>
-    <iframe id="view-inicio" src="inicio.html" class="app-view active"></iframe>
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <iframe id="view-inicio" data-src="inicio.html" class="app-view active"></iframe>
     <iframe
       id="view-calculadora"
-      src="calculadora/index.html"
+      data-src="calculadora/index.html"
       class="app-view"
     ></iframe>
     <iframe
       id="view-encomendas"
-      src="encomendas/index.html"
+      data-src="encomendas/index.html"
       class="app-view"
     ></iframe>
     <iframe
       id="view-atualizacoes"
-      src="atualizacoes.html"
+      data-src="atualizacoes.html"
       class="app-view"
     ></iframe>
     <iframe
       id="view-taverna"
-      src="taverna.html"
+      data-src="taverna.html"
       class="app-view"
     ></iframe>
 
@@ -779,6 +795,11 @@
       function switchView(targetId) {
         if (isAnimating) return;
 
+        // Auto-collapse sidebar on mobile
+        if (window.innerWidth <= 767 && !isSidebarCollapsed) {
+          toggleSidebar();
+        }
+
         const currentActive = document.querySelector(".app-view.active");
         if (currentActive && currentActive.id === `view-${targetId}`) return;
 
@@ -813,6 +834,10 @@
         const tvLine = document.getElementById("tv-line");
         const nextView = document.getElementById(`view-${targetId}`);
 
+        if (!nextView.getAttribute("src")) {
+          nextView.setAttribute("src", nextView.getAttribute("data-src"));
+        }
+
         // Start Implosion
         currentActive.classList.add("imploding");
 
@@ -835,10 +860,13 @@
 
       // Restore last view instantly on load
       (function restoreLastView() {
-        const lastView = localStorage.getItem("icarus_last_view");
-        if (lastView && lastView !== "inicio") {
-          const targetView = document.getElementById(`view-${lastView}`);
-          if (targetView) {
+        const lastView = localStorage.getItem("icarus_last_view") || "inicio";
+        const targetView = document.getElementById(`view-${lastView}`);
+        if (targetView) {
+          if (!targetView.getAttribute("src")) {
+            targetView.setAttribute("src", targetView.getAttribute("data-src"));
+          }
+          if (lastView !== "inicio") {
             // Remove active from any current
             document
               .querySelectorAll(".app-view")
